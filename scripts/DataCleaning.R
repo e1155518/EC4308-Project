@@ -1,7 +1,3 @@
-
-# ============================================================
-# EC4308 - Data Cleaning
-# ============================================================
 # Open the EC4308-Project.Rproj file before running.
 # All file paths are relative to the project root.
 #
@@ -10,15 +6,11 @@
 # data/US_data_cleaned.xlsx
 #
 # Both datasets include Employ_Rate (Canadian employment rate).
-# ============================================================
 
 library(readxl)
 library(writexl)
 
-
-# ============================================================
 # 1. Load and clean Canadian data
-# ============================================================
 
 can_data <- read.csv(
   "data/raw data/CAN_data_transformed.csv",
@@ -90,6 +82,9 @@ sum(is.na(can_data_cleaned))
 
 head(can_data_cleaned$Date)
 tail(can_data_cleaned$Date)
+
+
+
 
 
 # ============================================================
@@ -479,6 +474,56 @@ stopifnot(
 
 
 # ============================================================
+# Filter Canadian predictors: Keep CAN and NA regions
+# ============================================================
+
+# 1. Load Canadian predictor metadata
+
+can_md <- readxl::read_excel(
+  "data/Table_can_md.xlsx"
+)
+
+# 2. Identify predictors with Region == CAN or NA
+
+can_vars_to_keep <- can_md$Variable[
+  can_md$Region == "CAN" | is.na(can_md$Region)
+]
+
+# 3. Keep matching predictors in cleaned dataset
+# Always preserve Date and Canadian employment rate
+
+vars_to_keep <- unique(c(
+  "Date",
+  intersect(can_vars_to_keep, names(can_data_cleaned_emrate)),
+  "Employ_Rate"
+))
+
+# 4. Filter Canadian dataset
+
+can_data_cleaned_emrate <- can_data_cleaned_emrate[
+  , vars_to_keep
+]
+
+# 5. Sanity checks
+
+cat("Total columns retained:", ncol(can_data_cleaned_emrate), "\n")
+
+cat(
+  "Predictors retained:",
+  ncol(can_data_cleaned_emrate) - 2,
+  "\n"
+)
+
+# Check variables missing from cleaned dataset
+
+setdiff(
+  can_vars_to_keep,
+  names(can_data_cleaned_emrate)
+)
+
+
+
+# ============================================================
 # 10. Export final cleaned datasets
 # ============================================================
 
@@ -496,3 +541,4 @@ cat(
   "\nData cleaning completed successfully!\n",
   "Both datasets include Canadian Employ_Rate.\n"
 )
+
