@@ -28,9 +28,7 @@ can_data$Date <- as.Date(
   )
 )
 
-# Check conversion
 
-head(can_data$Date)
 class(can_data$Date)
 
 # Keep observations from 1981 onward
@@ -320,6 +318,17 @@ EMrate_data$Employ_Rate <- as.numeric(
   EMrate_data$Employ_Rate
 )
 
+# Sort employment rate chronologically
+EMrate_data <- EMrate_data[
+  order(EMrate_data$Date),
+]
+
+# First difference employment rate
+EMrate_data$Employ_Rate <- c(
+  NA,
+  diff(EMrate_data$Employ_Rate)
+)
+
 # Restrict to forecasting sample
 
 EMrate_data <- EMrate_data[
@@ -374,8 +383,6 @@ range(can_data_cleaned_emrate$Date)
 
 sum(is.na(can_data_cleaned_emrate$Employ_Rate))
 
-head(can_data_cleaned_emrate)
-
 
 # ============================================================
 # 8. Merge Canadian employment rate into US dataset
@@ -413,9 +420,6 @@ dim(us_data_cleaned_emrate)
 range(us_data_cleaned_emrate$sasdate)
 
 sum(is.na(us_data_cleaned_emrate$Employ_Rate))
-
-head(us_data_cleaned_emrate)
-
 
 # ============================================================
 # 9. Final sanity checks
