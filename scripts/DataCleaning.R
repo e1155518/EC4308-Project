@@ -278,18 +278,17 @@ stopifnot(
 )
 
 
+
 # ============================================================
 # 6. Load and clean Canadian employment rate
 # ============================================================
+
+# Load raw employment rate data
 
 EMrate_data <- read.csv(
   "data/raw data/CAN_employ_rate_raw.csv",
   na.strings = "NA"
 )
-
-# Check original column names
-
-names(EMrate_data)
 
 # Keep employment rate observations
 
@@ -318,16 +317,39 @@ EMrate_data$Employ_Rate <- as.numeric(
   EMrate_data$Employ_Rate
 )
 
-# Sort employment rate chronologically
+# Sort chronologically
+
 EMrate_data <- EMrate_data[
   order(EMrate_data$Date),
 ]
 
-# First difference employment rate
-EMrate_data$Employ_Rate <- c(
-  NA,
-  diff(EMrate_data$Employ_Rate)
-)
+rownames(EMrate_data) <- NULL
+
+# Check for duplicate monthly dates
+
+if (anyDuplicated(EMrate_data$Date) > 0) {
+  stop("Employment rate dataset contains duplicate dates.")
+}
+
+# ============================================================
+# Create forward differences for forecasting horizons
+# ============================================================
+
+# Forecast horizons: 1, 3, 6 and 12 months
+
+horizons <- c(1, 3, 6, 12)
+
+for (h in horizons) {
+  
+  # Forward difference: y(t+h) - y(t)
+  
+  EMrate_data[[paste0("Employ_Rate_diff_h", h)]] <- c(
+    EMrate_data$Employ_Rate[(h + 1):nrow(EMrate_data)] -
+      EMrate_data$Employ_Rate[1:(nrow(EMrate_data) - h)],
+    rep(NA_real_, h)
+  )
+  
+}
 
 # Restrict to forecasting sample
 
@@ -336,24 +358,27 @@ EMrate_data <- EMrate_data[
     EMrate_data$Date <= as.Date("2025-09-01"),
 ]
 
-# Check for duplicate monthly dates
-# Prevent accidental many-to-many merges
+# ============================================================
+# Sanity checks
+# ============================================================
 
-if (anyDuplicated(EMrate_data$Date) > 0) {
-  stop(
-    "Employment rate dataset contains duplicate dates. ",
-    "Check whether additional filters are required."
-  )
-}
-
-# Check employment rate data
+# Check column names
 
 names(EMrate_data)
+
+# Check first and last observations
+
 head(EMrate_data)
-tail(EMrate_data)
+tail(EMrate_data, 15)
+
+# Check date range
 
 range(EMrate_data$Date)
-sum(is.na(EMrate_data$Employ_Rate))
+
+# Check missing values for each horizon
+
+colSums(is.na(EMrate_data))
+
 
 
 # ============================================================
