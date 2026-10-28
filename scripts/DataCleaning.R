@@ -20,8 +20,8 @@ library(writexl)
 # 1. Load and clean Canadian data
 # ============================================================
 
-can_data <- read_excel(
-  "data/raw data/CAN_data_transformed.xlsx",
+can_data <- read.csv(
+  "data/raw data/CAN_data_transformed.csv",
   na = "NA"
 )
 
