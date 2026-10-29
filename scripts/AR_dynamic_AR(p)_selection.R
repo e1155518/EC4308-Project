@@ -7,14 +7,6 @@ can <- can %>%
   mutate(Date = as.Date(Date)) %>%
   arrange(Date)
 
-# Create historical one-month employment-rate changes
-# These are known at the forecast origin.
-
-can <- can %>%
-  mutate(
-    EM_change = Employ_Rate - lag(Employ_Rate)
-  )
-
 runAR <- function(window, max_lag = 6, IC = "bic") {
   
   # Create regression dataset
@@ -25,7 +17,7 @@ runAR <- function(window, max_lag = 6, IC = "bic") {
   # Add historical employment-rate changes
   for (p in 1:max_lag) {
     df[[paste0("L", p)]] <- dplyr::lag(
-      window$EM_change, p - 1
+      window$Employ_Rate_diff_lag1 , p - 1
     )
   }
   
@@ -172,7 +164,7 @@ head(ar1_results$forecasts)
 library(ggplot2)
 
 ggplot(ar1_results$forecasts, aes(x = Date)) +
-  geom_line(aes(y = Actual, color = "Actual")) +
+  geom_line(aes(y = Actual, color = "Actual")) +  
   geom_line(aes(y = Predicted, color = "Predicted")) +
   labs(
     title = "AR Forecasts: 1-Month Employment Rate Change",
@@ -182,3 +174,32 @@ ggplot(ar1_results$forecasts, aes(x = Date)) +
     color = ""
   ) +
   theme_minimal()
+
+table(ar1_results$forecasts$Best_AR)
+
+ggplot(ar1_results$forecasts,
+       aes(x = Date, y = Best_AR)) +
+  
+  geom_step(color = "steelblue", linewidth = 0.8) +
+  geom_point(color = "steelblue", size = 1) +
+  
+  scale_y_continuous(
+    breaks = 1:6,
+    labels = paste0("AR(", 1:6, ")"),
+    limits = c(1, 6)
+  ) +
+  
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  
+  labs(
+    title = "Optimal AR Order Over Time",
+    subtitle = "1-Month-Ahead Forecast | Fixed Rolling Window | BIC Selection",
+    x = "Forecast Date",
+    y = "BIC-Selected AR Order"
+  ) +
+  
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
