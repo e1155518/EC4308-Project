@@ -506,50 +506,56 @@ stopifnot(
 # Filter Canadian predictors: Keep CAN and NA regions
 # ============================================================
 
-# 1. Load Canadian predictor metadata
+
+# ============================================================
+# Filter Canadian predictors: Keep CAN and NA regions
+# ============================================================
+
+# Load Canadian predictor metadata
 
 can_md <- readxl::read_excel(
   "data/Table_can_md.xlsx"
 )
 
-# 2. Identify predictors with Region == CAN or NA
+# Identify predictors with Region == CAN or NA
 
 can_vars_to_keep <- can_md$Variable[
   can_md$Region == "CAN" | is.na(can_md$Region)
 ]
 
-# 3. Keep matching predictors in cleaned dataset
-# Always preserve Date and Canadian employment rate
+# Employment rate variables to preserve
+
+target_vars <- c(
+  "Employ_Rate",
+  "Employ_Rate_diff_h1",
+  "Employ_Rate_diff_h3",
+  "Employ_Rate_diff_h6",
+  "Employ_Rate_diff_h12"
+)
+
+# Keep national predictors, Date, and all employment variables
 
 vars_to_keep <- unique(c(
   "Date",
   intersect(can_vars_to_keep, names(can_data_cleaned_emrate)),
-  "Employ_Rate"
+  target_vars
 ))
 
-# 4. Filter Canadian dataset
+# Filter Canadian dataset
 
 can_data_cleaned_emrate <- can_data_cleaned_emrate[
   , vars_to_keep
 ]
 
-# 5. Sanity checks
+# Check results
 
-cat("Total columns retained:", ncol(can_data_cleaned_emrate), "\n")
+names(can_data_cleaned_emrate)
 
-cat(
-  "Predictors retained:",
-  ncol(can_data_cleaned_emrate) - 2,
-  "\n"
+# Confirm all employment variables are present
+
+stopifnot(
+  all(target_vars %in% names(can_data_cleaned_emrate))
 )
-
-# Check variables missing from cleaned dataset
-
-setdiff(
-  can_vars_to_keep,
-  names(can_data_cleaned_emrate)
-)
-
 
 
 # ============================================================
