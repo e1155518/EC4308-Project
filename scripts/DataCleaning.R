@@ -351,6 +351,19 @@ for (h in horizons) {
   
 }
 
+
+# ============================================================
+# Create backward first difference of employment rate
+# ============================================================
+
+# Backward difference: y(t) - y(t-1)
+
+EMrate_data$Employ_Rate_diff_lag1 <- c(
+  NA_real_,
+  diff(EMrate_data$Employ_Rate)
+)
+
+
 # Restrict to forecasting sample
 
 EMrate_data <- EMrate_data[
@@ -506,11 +519,6 @@ stopifnot(
 # Filter Canadian predictors: Keep CAN and NA regions
 # ============================================================
 
-
-# ============================================================
-# Filter Canadian predictors: Keep CAN and NA regions
-# ============================================================
-
 # Load Canadian predictor metadata
 
 can_md <- readxl::read_excel(
@@ -527,6 +535,7 @@ can_vars_to_keep <- can_md$Variable[
 
 target_vars <- c(
   "Employ_Rate",
+  "Employ_Rate_diff_lag1",
   "Employ_Rate_diff_h1",
   "Employ_Rate_diff_h3",
   "Employ_Rate_diff_h6",
@@ -556,6 +565,112 @@ names(can_data_cleaned_emrate)
 stopifnot(
   all(target_vars %in% names(can_data_cleaned_emrate))
 )
+
+
+# ============================================================
+# Merge Canadian and US datasets
+# ============================================================
+
+# 1. Define employment rate variables
+
+employment_vars <- c(
+  "Employ_Rate",
+  "Employ_Rate_diff_lag1",
+  "Employ_Rate_diff_h1",
+  "Employ_Rate_diff_h3",
+  "Employ_Rate_diff_h6",
+  "Employ_Rate_diff_h12"
+)
+
+# 2. Check employment variables exist in both datasets
+
+stopifnot(
+  all(employment_vars %in% names(can_data_cleaned_emrate)),
+  all(employment_vars %in% names(us_data_cleaned_emrate))
+)
+
+# 3. Rename US date column to match Canadian dataset
+
+us_for_merge <- us_data_cleaned_emrate
+
+names(us_for_merge)[
+  names(us_for_merge) == "sasdate"
+] <- "Date"
+
+# 4. Remove duplicated employment variables from US dataset
+# Keep only the Canadian dataset's employment variables
+
+us_for_merge <- us_for_merge[
+  , !names(us_for_merge) %in% employment_vars
+]
+
+# 5. Prefix US predictors to prevent duplicate column names
+
+names(us_for_merge)[
+  names(us_for_merge) != "Date"
+] <- paste0(
+  "US_",
+  names(us_for_merge)[names(us_for_merge) != "Date"]
+)
+
+# 6. Merge by monthly date
+
+can_us_data_cleaned <- merge(
+  can_data_cleaned_emrate,
+  us_for_merge,
+  by = "Date",
+  all = FALSE,
+  sort = TRUE
+)
+
+# 7. Sanity checks
+
+cat(
+  "Combined dataset dimensions:",
+  dim(can_us_data_cleaned),
+  "\n"
+)
+
+cat(
+  "Combined dataset date range:",
+  as.character(min(can_us_data_cleaned$Date)),
+  "to",
+  as.character(max(can_us_data_cleaned$Date)),
+  "\n"
+)
+
+# Check for duplicate dates
+
+stopifnot(
+  !anyDuplicated(can_us_data_cleaned$Date)
+)
+
+# Check for duplicate column names
+
+stopifnot(
+  !anyDuplicated(names(can_us_data_cleaned))
+)
+
+# Check employment variables are preserved
+
+stopifnot(
+  all(employment_vars %in% names(can_us_data_cleaned))
+)
+
+# Check that no dates were lost in the merge
+
+stopifnot(
+  nrow(can_us_data_cleaned) ==
+    nrow(can_data_cleaned_emrate)
+)
+
+# 8. Export combined dataset
+
+write_xlsx(
+  can_us_data_cleaned,
+  "data/CAN_US_data_cleaned.xlsx"
+)
+
 
 
 # ============================================================
