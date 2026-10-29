@@ -46,7 +46,7 @@ library(hdm)
 
 #setwd("D:/data") #set your working directory here - or load data directly via RStudio interface
 
-load("rawdata.RData") #load the FRED-MD pre-processed data used in Medeiros et al (2019) 
+load("EC4308_Lecture4_codes_by_prof/rawdata.RData") #load the FRED-MD pre-processed data used in Medeiros et al (2019) 
 
 
 #We keep file/object names unchanged for ease of reference to the paper's replication materials (in case someone want to dig deeper for future projects/theses)
