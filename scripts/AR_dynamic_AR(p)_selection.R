@@ -140,9 +140,7 @@ ar.rolling.window <- function(
   
   return(list(
     forecasts = results,
-    MSE = mse,
-    RMSE = rmse,
-    MAE = mae
+    RMSE = rmse
   ))
 }
 
@@ -155,9 +153,7 @@ ar1_results <- ar.rolling.window(
   IC = "bic"
 )
 
-ar1_results$MSE
 ar1_results$RMSE
-ar1_results$MAE
 
 head(ar1_results$forecasts)
 

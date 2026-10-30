@@ -28,6 +28,8 @@ expected_dates <- seq(
 
 stopifnot(identical(can$Date, expected_dates))
 
+############ runAR and ar.rolling.window functions ##########
+
 runAR <- function(Y, p, horizon = 1) {
   
   # Y columns:
@@ -89,7 +91,8 @@ ar.rolling.window <- function(
     nprev = 100,
     p = 1,
     horizon = 1,
-    test_end = as.Date("2019-12-01")
+    test_end = as.Date("2019-12-01"),
+    window_size = NULL
 ) {
   
   target_col <- paste0("Employ_Rate_diff_h", horizon)
@@ -110,9 +113,9 @@ ar.rolling.window <- function(
   # Forecast origins are h months before outcome dates
   origin_idx <- outcome_idx - horizon
   
-  # Determine fixed window length automatically
-  # using the first forecast origin
-  window_size <- min(origin_idx)
+  if (is.null(window_size)) {
+    window_size <- min(origin_idx)
+  }
   
   # Blank matrices for forecasts and coefficients
   save.coef <- matrix(NA_real_, nprev, p + 1)
@@ -168,7 +171,7 @@ ar.rolling.window <- function(
 }
 
 
-#########################################
+##################  Running AR(1)- AR(12) for all 4 horizons #######################
 
 horizons <- c(1, 3, 6, 12)
 ar_orders <- 1:12
@@ -208,7 +211,7 @@ for (h in horizons) {
   }
 }
 
-#####3333333333333333333333333
+############ presenting the results #################
 
 rmse_table <- rmse_results %>%
   mutate(
@@ -235,50 +238,207 @@ best_ar_table <- rmse_results %>%
 
 print(best_ar_table)
 
-library(ggplot2)
 
-plot_AR <- function(h) {
+############# plotting actual vs predicted ###########
+
+library(ggplot2)
+library(dplyr)
+
+plot_AR <- function(h, period = "all") {
   
-  # Find the best AR model for the selected horizon
+  # Validate inputs
+  if (!h %in% c(1, 3, 6, 12)) {
+    stop("h must be 1, 3, 6, or 12")
+  }
+  
+  period <- match.arg(period, c("all", "pre", "post"))
+  
+  # Retrieve best AR model for this horizon
   selected <- best_ar_table[
     best_ar_table$Horizon == h,
   ]
   
   p <- selected$AR_Order[1]
-  rmse <- selected$RMSE[1]
   
-  # Retrieve the saved forecasting results
-  result <- ar_results[[paste0("h", h, "_AR", p)]]
+  # Retrieve pre-COVID forecasts
+  pre <- ar_results[[
+    paste0("h", h, "_AR", p)
+  ]]$forecasts
   
-  forecast_df <- result$forecasts
+  # Retrieve post-COVID forecasts
+  post <- ar_postcovid_results[[
+    paste0("h", h)
+  ]]$forecasts
+  
+  # Select period
+  if (period == "pre") {
+    forecast_df <- pre
+    period_label <- "Pre-COVID (2011–2019)"
+  } else if (period == "post") {
+    forecast_df <- post
+    period_label <- "COVID/Post-COVID (2020–2025)"
+  } else {
+    forecast_df <- bind_rows(pre, post)
+    period_label <- "Full OOS Period (2011–2025)"
+  }
+  
+  # Calculate RMSE for selected period
+  rmse <- sqrt(mean(
+    (forecast_df$Actual - forecast_df$Predicted)^2
+  ))
   
   # Plot actual vs predicted
-  ggplot(forecast_df, aes(x = Outcome_Date)) +
+  plot <- ggplot(forecast_df, aes(x = Outcome_Date)) +
+    
     geom_line(
       aes(y = Actual, color = "Actual"),
       linewidth = 0.8
     ) +
+    
     geom_line(
       aes(y = Predicted, color = "Predicted"),
       linewidth = 0.8
     ) +
+    
     scale_color_manual(
       values = c(
         "Actual" = "black",
         "Predicted" = "blue"
       )
     ) +
+    
     labs(
-      title = paste0("Horizon ", h, ": AR(", p, ")"),
-      subtitle = paste0("RMSE = ", round(rmse, 4)),
+      title = paste0(
+        h, "-Month Forecast: AR(", p, ")"
+      ),
+      subtitle = paste0(
+        period_label,
+        " | RMSE = ", round(rmse, 4)
+      ),
       x = "Outcome Date",
       y = "Employment Rate Change (percentage points)",
       color = NULL
     ) +
+    
     theme_minimal()
+  
+  print(plot)
 }
 
-plot_AR(1)   # 1-month forecast
-plot_AR(3)   # 3-month forecast
-plot_AR(6)   # 6-month forecast
-plot_AR(12)  # 12-month forecast
+plot_AR(1, "pre")
+plot_AR(3, "pre")
+plot_AR(6, "pre")
+plot_AR(12, "pre")
+
+# ============================================================
+# Post-COVID AR Forecasting (2020 - September 2025)
+# ============================================================
+
+# Store post-COVID results
+ar_postcovid_results <- list()
+
+# Comparison table
+ar_period_comparison <- data.frame()
+
+for (i in 1:nrow(best_ar_table)) {
+  
+  h <- best_ar_table$Horizon[i]
+  p <- best_ar_table$AR_Order[i]
+  
+  # Recover the window length used in the pre-COVID analysis
+  # (based on the first forecast origin)
+  window_size <- which(
+    can$Date ==
+      as.Date(ar_results[[paste0("h", h, "_AR", p)]]$
+                forecasts$Forecast_Origin[1])
+  )
+  
+  # Run post-COVID forecasts
+  result <- ar.rolling.window(
+    data = can,
+    nprev = 69,
+    p = p,
+    horizon = h,
+    test_end = as.Date("2025-09-01"),
+    window_size = window_size
+  )
+  
+  # Save full predictions
+  ar_postcovid_results[[paste0("h", h)]] <- result
+  
+  # Retrieve pre-COVID RMSE
+  pre_rmse <- best_ar_table$RMSE[i]
+  
+  # Retrieve post-COVID RMSE
+  post_rmse <- unname(result$errors["rmse"])
+  
+  # Store comparison
+  ar_period_comparison <- rbind(
+    ar_period_comparison,
+    data.frame(
+      Horizon = h,
+      Model = paste0("AR(", p, ")"),
+      Pre_COVID_RMSE = pre_rmse,
+      Post_COVID_RMSE = post_rmse
+    )
+  )
+}
+
+print(ar_period_comparison)
+
+
+# ============================================================
+# Export complete AR predictions (to calculate loss differential later on)
+# ============================================================
+
+library(dplyr)
+
+ar_all_predictions <- bind_rows(
+  lapply(seq_len(nrow(best_ar_table)), function(i) {
+    
+    h <- best_ar_table$Horizon[i]
+    p <- best_ar_table$AR_Order[i]
+    
+    # Pre-COVID predictions
+    pre <- ar_results[[
+      paste0("h", h, "_AR", p)
+    ]]$forecasts
+    
+    pre$Period <- "Pre-COVID"
+    
+    # Post-COVID predictions
+    post <- ar_postcovid_results[[
+      paste0("h", h)
+    ]]$forecasts
+    
+    post$Period <- "Post-COVID"
+    
+    # Combine
+    df <- bind_rows(pre, post)
+    
+    df$Model <- paste0("AR(", p, ")")
+    df$Horizon <- h
+    df$Predictor_Set <- "CAN"
+    
+    df
+  })
+)
+
+dir.create("results", showWarnings = FALSE)
+
+write.csv(
+  ar_all_predictions,
+  "results/AR_predictions.csv",
+  row.names = FALSE
+)
+
+plot_AR(1, "post")
+plot_AR(3, "post")
+plot_AR(6, "post")
+plot_AR(12, "post")
+
+
+plot_AR(1, "all")
+plot_AR(3, "all")
+plot_AR(6, "all")
+plot_AR(12, "all")
