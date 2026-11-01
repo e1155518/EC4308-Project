@@ -5,6 +5,8 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(randomForest)
+library(parallel)
+n_workers <- 4L
 # Forecasting functions are defined below.
 # Direct multi-horizon random forest, following professor's runrf / rf.rolling.window.
 # No PCA. Four lags (current through t-3) for each selected predictor.
@@ -53,45 +55,172 @@ runrf <- function(Y, horizon = 1L, n_lags = 4L, use_dummy = FALSE,
   list(model = model, pred = pred, importance = randomForest::importance(model))
 }
 
+
+#### the first rolling window is executed sequentially, the second uses parallel processing and shld be faster since it uses 4 workers
+
+# rf.rolling.window <- function(data, predictor_cols, horizon = 1L,
+#                               nprev = 100L, test_end = as.Date('2019-12-01'),
+#                               window_size = NULL, use_dummy = FALSE,
+#                               n_lags = 4L, seed = 4308L, verbose = TRUE) {
+#   target_col <- paste0('Employ_Rate_diff_h', horizon)
+#   if (!target_col %in% names(data)) stop('Missing target: ', target_col)
+#   idx <- match(as.Date(test_end), data$Date)
+#   if (is.na(idx)) stop('Evaluation end date not found: ', test_end)
+#   outcome_idx <- seq.int(idx - nprev + 1L, idx)
+#   origin_idx <- outcome_idx - horizon
+#   if (min(origin_idx) < 1L) stop('Forecast origins before first data row.')
+#   if (is.null(window_size)) window_size <- min(origin_idx)
+#   if (min(origin_idx) - window_size + 1L < 1L ||
+#       window_size <= horizon + n_lags + 5L) stop('Invalid rolling window size.')
+#   controls <- if (use_dummy) paste0(c('COVID_Shock', 'COVID_Recovery'), '_h', horizon) else character()
+#   needed <- c(target_col, predictor_cols, controls)
+#   if (!all(needed %in% names(data))) stop('Missing columns: ', paste(setdiff(needed, names(data)), collapse=', '))
+#   pred <- numeric(nprev)
+#   imp <- vector('list', nprev)
+#   for (i in nprev:1) {
+#     j <- 1L + nprev - i
+#     origin <- origin_idx[j]
+#     w <- data[(origin - window_size + 1L):origin, needed, drop = FALSE]
+#     names(w) <- c('Target', predictor_cols,
+#                   if (use_dummy) c('COVID_Shock_Control', 'COVID_Recovery_Control'))
+#     fit <- runrf(w, horizon, n_lags, use_dummy, seed = seed + j)
+#     pred[j] <- fit$pred
+#     imp[[j]] <- fit$importance
+#     if (verbose && (j == 1L || j %% 20L == 0L || j == nprev))
+#       cat('RF horizon', horizon, 'forecast', j, '/', nprev, '\n')
+#   }
+#   actual <- data[[target_col]][origin_idx]
+#   if (anyNA(actual)) stop('Missing actual outcomes in evaluation period.')
+#   errors <- actual - pred
+#   list(pred = pred, errors = c(rmse = sqrt(mean(errors^2)), mae = mean(abs(errors))),
+#        save.importance = imp,
+#        forecasts = data.frame(Forecast_Origin = data$Date[origin_idx],
+#          Outcome_Date = data$Date[outcome_idx], Actual = actual,
+#          Predicted = pred, Forecast_Error = errors))
+# }
+
 rf.rolling.window <- function(data, predictor_cols, horizon = 1L,
-                              nprev = 100L, test_end = as.Date('2019-12-01'),
+                              nprev = 100L, test_end = as.Date("2019-12-01"),
                               window_size = NULL, use_dummy = FALSE,
-                              n_lags = 4L, seed = 4308L, verbose = TRUE) {
-  target_col <- paste0('Employ_Rate_diff_h', horizon)
-  if (!target_col %in% names(data)) stop('Missing target: ', target_col)
+                              n_lags = 4L, seed = 4308L, verbose = TRUE,
+                              n_workers = 4L) {
+  
+  target_col <- paste0("Employ_Rate_diff_h", horizon)
+  
+  if (!target_col %in% names(data))
+    stop("Missing target: ", target_col)
+  
   idx <- match(as.Date(test_end), data$Date)
-  if (is.na(idx)) stop('Evaluation end date not found: ', test_end)
+  
+  if (is.na(idx))
+    stop("Evaluation end date not found: ", test_end)
+  
   outcome_idx <- seq.int(idx - nprev + 1L, idx)
   origin_idx <- outcome_idx - horizon
-  if (min(origin_idx) < 1L) stop('Forecast origins before first data row.')
-  if (is.null(window_size)) window_size <- min(origin_idx)
+  
+  if (min(origin_idx) < 1L)
+    stop("Forecast origins before first data row.")
+  
+  if (is.null(window_size))
+    window_size <- min(origin_idx)
+  
   if (min(origin_idx) - window_size + 1L < 1L ||
-      window_size <= horizon + n_lags + 5L) stop('Invalid rolling window size.')
-  controls <- if (use_dummy) paste0(c('COVID_Shock', 'COVID_Recovery'), '_h', horizon) else character()
-  needed <- c(target_col, predictor_cols, controls)
-  if (!all(needed %in% names(data))) stop('Missing columns: ', paste(setdiff(needed, names(data)), collapse=', '))
-  pred <- numeric(nprev)
-  imp <- vector('list', nprev)
-  for (i in nprev:1) {
-    j <- 1L + nprev - i
-    origin <- origin_idx[j]
-    w <- data[(origin - window_size + 1L):origin, needed, drop = FALSE]
-    names(w) <- c('Target', predictor_cols,
-                  if (use_dummy) c('COVID_Shock_Control', 'COVID_Recovery_Control'))
-    fit <- runrf(w, horizon, n_lags, use_dummy, seed = seed + j)
-    pred[j] <- fit$pred
-    imp[[j]] <- fit$importance
-    if (verbose && (j == 1L || j %% 20L == 0L || j == nprev))
-      cat('RF horizon', horizon, 'forecast', j, '/', nprev, '\n')
+      window_size <= horizon + n_lags + 5L)
+    stop("Invalid rolling window size.")
+  
+  controls <- if (use_dummy) {
+    paste0(c("COVID_Shock", "COVID_Recovery"), "_h", horizon)
+  } else {
+    character()
   }
+  
+  needed <- c(target_col, predictor_cols, controls)
+  
+  if (!all(needed %in% names(data)))
+    stop("Missing columns: ",
+         paste(setdiff(needed, names(data)), collapse = ", "))
+  
+  # Start parallel workers
+  cl <- parallel::makeCluster(n_workers)
+  on.exit(parallel::stopCluster(cl), add = TRUE)
+  
+  parallel::clusterEvalQ(cl, library(randomForest))
+  
+  # Export function and required objects
+  parallel::clusterExport(
+    cl,
+    varlist = c(
+      "runrf", "data", "predictor_cols", "horizon",
+      "n_lags", "use_dummy", "seed", "origin_idx",
+      "window_size", "needed"
+    ),
+    envir = environment()
+  )
+  
+  # Run rolling forecasts in parallel
+  results <- parallel::parLapplyLB(
+    cl,
+    seq_len(nprev),
+    function(j) {
+      
+      origin <- origin_idx[j]
+      
+      w <- data[
+        (origin - window_size + 1L):origin,
+        needed,
+        drop = FALSE
+      ]
+      
+      names(w) <- c(
+        "Target",
+        predictor_cols,
+        if (use_dummy)
+          c("COVID_Shock_Control", "COVID_Recovery_Control")
+      )
+      
+      fit <- runrf(
+        w, horizon, n_lags, use_dummy,
+        seed = seed + j
+      )
+      
+      list(
+        pred = fit$pred,
+        importance = fit$importance
+      )
+    }
+  )
+  
+  # Collect results in chronological order
+  pred <- vapply(results, function(x) x$pred, numeric(1))
+  imp <- lapply(results, function(x) x$importance)
+  
   actual <- data[[target_col]][origin_idx]
-  if (anyNA(actual)) stop('Missing actual outcomes in evaluation period.')
+  
+  if (anyNA(actual))
+    stop("Missing actual outcomes in evaluation period.")
+  
   errors <- actual - pred
-  list(pred = pred, errors = c(rmse = sqrt(mean(errors^2)), mae = mean(abs(errors))),
-       save.importance = imp,
-       forecasts = data.frame(Forecast_Origin = data$Date[origin_idx],
-         Outcome_Date = data$Date[outcome_idx], Actual = actual,
-         Predicted = pred, Forecast_Error = errors))
+  
+  if (verbose)
+    cat("Completed RF horizon", horizon,
+        "|", nprev, "forecasts using",
+        n_workers, "workers\n")
+  
+  return(list(
+    pred = pred,
+    errors = c(
+      rmse = sqrt(mean(errors^2)),
+      mae = mean(abs(errors))
+    ),
+    save.importance = imp,
+    forecasts = data.frame(
+      Forecast_Origin = data$Date[origin_idx],
+      Outcome_Date = data$Date[outcome_idx],
+      Actual = actual,
+      Predicted = pred,
+      Forecast_Error = errors
+    )
+  ))
 }
 
 
@@ -118,12 +247,56 @@ prepare_data <- function(file, label) {
   d
 }
 raw <- Map(prepare_data, files, names(files))
+
+# ============================================================
+# Create historical COVID outlier controls
+# ============================================================
+
+for (set_name in names(raw)) {
+  
+  df <- raw[[set_name]]
+  
+  for (h in c(1, 3, 6, 12)) {
+    
+    # Historical target: E(t+h) - E(t)
+    # COVID controls refer to months within that target interval.
+    
+    origin_dates <- as.Date(df$Date)
+    
+    shock <- numeric(nrow(df))
+    recovery <- numeric(nrow(df))
+    
+    for (k in seq_len(h)) {
+      
+      outcome_month <- seq(
+        min(origin_dates),
+        by = "month",
+        length.out = nrow(df) + h
+      )[seq_len(nrow(df)) + k]
+      
+      shock <- shock + as.numeric(
+        outcome_month >= as.Date("2020-03-01") &
+          outcome_month <= as.Date("2020-04-01")
+      )
+      
+      recovery <- recovery + as.numeric(
+        outcome_month >= as.Date("2020-05-01") &
+          outcome_month <= as.Date("2022-02-01")
+      )
+    }
+    
+    df[[paste0("COVID_Shock_h", h)]] <- shock / h
+    df[[paste0("COVID_Recovery_h", h)]] <- recovery / h
+  }
+  
+  raw[[set_name]] <- df
+}
+
 names(raw) <- names(files)
 
 # All three datasets already contain the Canadian employment targets.
-# Explicitly exclude all forward targets and the employment-rate level
-# from the predictor set. The historical one-month change is allowed
-# as an autoregressive predictor, consistent with the AR benchmark.
+# Explicitly exclude all forward targets and the employment-rate level from the predictor set. 
+# The historical one-month change is allowed as an autoregressive predictor, consistent with the AR benchmark.
 target_vars <- c('Employ_Rate', 'Employ_Rate_diff_lag1',
                  'Employ_Rate_diff_h1', 'Employ_Rate_diff_h3',
                  'Employ_Rate_diff_h6', 'Employ_Rate_diff_h12')
@@ -188,64 +361,253 @@ window_by_h <- setNames(pre_idx - n_pre + 1L - horizons, as.character(horizons))
 rf_results <- list()
 forecast_list <- list()
 importance_list <- list()
-for (set_name in names(sets)) {
-  obj <- sets[[set_name]]
-  for (h in horizons) {
-    for (period in c('Pre_COVID', 'Post_COVID')) {
-      for (spec in c('No_Dummy', 'With_Dummy')) {
-        if (period == 'Pre_COVID' && spec == 'With_Dummy') next
-        key <- paste(set_name, h, period, spec, sep='_')
-        cat('Running RF:', key, '\n')
-        result <- rf.rolling.window(
-          data = obj$data, predictor_cols = obj$predictors,
-          horizon = h, nprev = if (period == 'Pre_COVID') n_pre else n_post,
-          test_end = if (period == 'Pre_COVID') pre_end else post_end,
-          window_size = window_by_h[as.character(h)],
-          use_dummy = spec == 'With_Dummy', n_lags = n_lags)
-        rf_results[[key]] <- result
-        f <- result$forecasts
-        f$Horizon <- h
-        f$Model <- 'RF'
-        f$Predictor_Set <- set_name
-        f$Period <- period
-        f$Specification <- spec
-        forecast_list[[key]] <- f
-        # Importance is stored separately for every forecast origin.
-        importance_list[[key]] <- result$save.importance
+
+# ============================================================
+# Run Random Forest in batches with automatic saving
+# ============================================================
+
+# Choose which models to run
+predictor_sets <- c("CAN", "US", "CAN_US")
+horizons_to_run <- c(1, 3, 6, 12)
+
+# Folder for saved results
+save_dir <- "results/RF_batches"
+dir.create(save_dir, recursive = TRUE, showWarnings = FALSE)
+
+# Initialize results without deleting existing results
+if (!exists("rf_results")) {
+  rf_results <- list()
+}
+
+# Helper: run one model or load its saved result
+run_or_load_rf <- function(set_name, h, period, use_dummy,
+                           data, predictor_cols, nprev,
+                           test_end, window_size = NULL) {
+  
+  spec <- if (use_dummy) "With_Dummy" else "No_Dummy"
+  
+  key <- paste(set_name, h, period, spec, sep = "_")
+  file <- file.path(save_dir, paste0(key, ".rds"))
+  
+  if (file.exists(file)) {
+    cat("Loading saved:", key, "\n")
+    return(readRDS(file))
+  }
+  
+  cat("Running:", key, "\n")
+  
+  result <- rf.rolling.window(
+    data = data,
+    predictor_cols = predictor_cols,
+    nprev = nprev,
+    horizon = h,
+    use_dummy = use_dummy,
+    test_end = as.Date(test_end),
+    window_size = window_size
+  )
+  
+  saveRDS(result, file)
+  cat("Saved:", key, "\n")
+  
+  return(result)
+}
+
+for (set_name in predictor_sets) {
+  
+  data <- raw[[set_name]]
+  
+  # Exclude dates, outcome variables and COVID controls
+  predictor_cols <- setdiff(
+    names(data),
+    c(
+      "Date",
+      target_vars,
+      grep("^COVID_", names(data), value = TRUE)
+    )
+  )
+  
+  # Include historical Canadian employment-rate changes
+  predictor_cols <- unique(c(
+    predictor_cols,
+    "Employ_Rate_diff_lag1"
+  ))
+  
+  for (h in horizons_to_run) {
+    
+    cat("\n====================================\n")
+    cat("Predictor set:", set_name, "| Horizon:", h, "\n")
+    cat("====================================\n")
+    
+    # 1. Pre-COVID without dummy
+    pre <- run_or_load_rf(
+      set_name = set_name,
+      h = h,
+      period = "Pre_COVID",
+      use_dummy = FALSE,
+      data = data,
+      nprev = 100,
+      predictor_cols = predictor_cols,
+      test_end = "2019-12-01"
+    )
+    
+    rf_results[[paste(set_name, h, "Pre_COVID_No_Dummy", sep = "_")]] <- pre
+    
+    # Match post-COVID window size to pre-COVID
+    window_size <- match(
+      pre$forecasts$Forecast_Origin[1],
+      data$Date
+    )
+    
+    # 2. Post-COVID without dummy
+    post_no <- run_or_load_rf(
+      set_name = set_name,
+      h = h,
+      period = "Post_COVID",
+      use_dummy = FALSE,
+      data = data,
+      predictor_cols = predictor_cols,
+      nprev = 69,
+      test_end = "2025-09-01",
+      window_size = window_size
+    )
+    
+    rf_results[[paste(set_name, h, "Post_COVID_No_Dummy", sep = "_")]] <- post_no
+    
+    # 3. Post-COVID with historical outlier dummies
+    post_dummy <- run_or_load_rf(
+      set_name = set_name,
+      h = h,
+      period = "Post_COVID",
+      use_dummy = TRUE,
+      data = data,
+      predictor_cols = predictor_cols,
+      nprev = 69,
+      test_end = "2025-09-01",
+      window_size = window_size
+    )
+    
+    rf_results[[paste(set_name, h, "Post_COVID_With_Dummy", sep = "_")]] <- post_dummy
+    
+    cat("Completed:", set_name, "horizon", h, "\n")
+  }
+}
+
+cat("\nAll requested RF batches completed!\n")
+
+# ============================================================
+# 1. Reconstruct forecasts from completed RF results
+# ============================================================
+
+forecast_list <- list()
+
+for (set_name in c("CAN", "US", "CAN_US")) {
+  for (h in c(1, 3, 6, 12)) {
+    
+    for (period in c("Pre_COVID", "Post_COVID")) {
+      
+      specs <- if (period == "Pre_COVID") {
+        "No_Dummy"
+      } else {
+        c("No_Dummy", "With_Dummy")
+      }
+      
+      for (spec in specs) {
+        
+        key <- paste(set_name, h, period, spec, sep = "_")
+        
+        if (!key %in% names(rf_results)) next
+        
+        df <- rf_results[[key]]$forecasts
+        
+        df$Predictor_Set <- set_name
+        df$Horizon <- h
+        df$Period <- period
+        df$Specification <- spec
+        
+        forecast_list[[key]] <- df
       }
     }
   }
 }
+
 rf_all_predictions <- bind_rows(forecast_list)
-# Duplicate identical pre-COVID predictions for reporting consistency only.
+
+# ============================================================
+# 2. Duplicate pre-COVID forecasts for reporting only
+# ============================================================
+
 rf_all_predictions <- bind_rows(
   rf_all_predictions,
   rf_all_predictions %>%
-    filter(Period == 'Pre_COVID', Specification == 'No_Dummy') %>%
-    mutate(Specification = 'With_Dummy'))
+    filter(
+      Period == "Pre_COVID",
+      Specification == "No_Dummy"
+    ) %>%
+    mutate(Specification = "With_Dummy")
+)
+
+# ============================================================
+# 3. Calculate RMSE for each period and specification
+# ============================================================
 
 rf_rmse_results <- rf_all_predictions %>%
   group_by(Predictor_Set, Horizon, Period, Specification) %>%
-  summarise(RMSE = sqrt(mean(Forecast_Error^2)), .groups='drop')
-rf_rmse_results <- bind_rows(rf_rmse_results,
+  summarise(
+    RMSE = sqrt(mean(Forecast_Error^2)),
+    .groups = "drop"
+  )
+
+# ============================================================
+# 4. Calculate full-period RMSE
+# ============================================================
+
+rf_rmse_results <- bind_rows(
+  rf_rmse_results,
+  
   rf_all_predictions %>%
     group_by(Predictor_Set, Horizon, Specification) %>%
-    summarise(RMSE = sqrt(mean(Forecast_Error^2)), .groups='drop') %>%
-    mutate(Period = 'All'))
+    summarise(
+      RMSE = sqrt(mean(Forecast_Error^2)),
+      .groups = "drop"
+    ) %>%
+    mutate(Period = "All")
+)
+
+# ============================================================
+# 5. Create final RMSE comparison table
+# ============================================================
 
 rf_rmse_table <- rf_rmse_results %>%
-  mutate(Category = case_when(
-    Period == 'Pre_COVID' & Specification == 'No_Dummy' ~ 'Pre_COVID',
-    Period == 'Post_COVID' & Specification == 'No_Dummy' ~ 'Post_No_Dummy',
-    Period == 'Post_COVID' & Specification == 'With_Dummy' ~ 'Post_With_Dummy',
-    Period == 'All' & Specification == 'No_Dummy' ~ 'All_No_Dummy',
-    Period == 'All' & Specification == 'With_Dummy' ~ 'All_With_Dummy',
-    TRUE ~ NA_character_)) %>%
+  mutate(
+    Category = case_when(
+      Period == "Pre_COVID" &
+        Specification == "No_Dummy" ~ "Pre_COVID",
+      
+      Period == "Post_COVID" &
+        Specification == "No_Dummy" ~ "Post_No_Dummy",
+      
+      Period == "Post_COVID" &
+        Specification == "With_Dummy" ~ "Post_With_Dummy",
+      
+      Period == "All" &
+        Specification == "No_Dummy" ~ "All_No_Dummy",
+      
+      Period == "All" &
+        Specification == "With_Dummy" ~ "All_With_Dummy",
+      
+      TRUE ~ NA_character_
+    )
+  ) %>%
   filter(!is.na(Category)) %>%
   select(Predictor_Set, Horizon, Category, RMSE) %>%
-  pivot_wider(names_from=Category, values_from=RMSE) %>%
+  pivot_wider(
+    names_from = Category,
+    values_from = RMSE
+  ) %>%
   arrange(Horizon, Predictor_Set)
-print(rf_rmse_table, n=Inf, width=Inf)
+
+print(rf_rmse_table, n = Inf, width = Inf)
+
 
 # Compare actual vs no-dummy vs with-dummy, for any predictor set / horizon.
 plot_RF <- function(h, predictor_set='CAN', period='all') {
@@ -274,136 +636,31 @@ plot_RF <- function(h, predictor_set='CAN', period='all') {
     theme_minimal()
 }
 
-dir.create('results', showWarnings=FALSE)
-write.csv(rf_all_predictions, 'results/RF_predictions.csv', row.names=FALSE)
-write.csv(rf_rmse_table, 'results/RF_RMSE_summary.csv', row.names=FALSE)
-saveRDS(importance_list, 'results/RF_variable_importance.rds')
-saveRDS(rf_results, 'results/RF_full_results.rds')
+
+# ============================================================
+# Export Random Forest results
+# ============================================================
+
+dir.create("results", showWarnings = FALSE)
+
+# 1. Export predictions for DM tests and ensemble methods
+write.csv(rf_all_predictions,"results/RF_predictions.csv", row.names = FALSE)
+write.csv(rf_rmse_table,"results/RF_RMSE_summary.csv",row.names = FALSE)
+
+# 3. Extract variable importance from completed RF models
+importance_list <- lapply(rf_results,  function(x) x$save.importance)
+
+# 4. Save variable importance separately
+saveRDS(importance_list,"results/RF_variable_importance.rds")
+
+# 5. Save all RF results (predictions + importance)
+saveRDS(  rf_results,  "results/RF_full_results.rds")
+cat("All RF results exported successfully!\n")
 
 # Examples:
-plot_RF(1, 'CAN', 'post')
-# plot_RF(3, 'US', 'all')
-# plot_RF(12, 'CAN_US', 'all')
+plot_RF(12, 'CAN', 'all')
+plot_RF(12, 'US', 'all')
+plot_RF(12, 'CAN_US', 'all')
 
 
-###################################### just horizon 1
-# Retrieve completed horizon-1 results
-pre <- rf_results[["CAN_1_Pre_COVID_No_Dummy"]]
-post_no <- rf_results[["CAN_1_Post_COVID_No_Dummy"]]
-post_dummy <- rf_results[["CAN_1_Post_COVID_With_Dummy"]]
 
-# Combine forecast data
-no_dummy <- rbind(pre$forecasts, post_no$forecasts)
-with_dummy <- rbind(pre$forecasts, post_dummy$forecasts)
-
-# RMSE function
-calc_rmse <- function(df) {
-  sqrt(mean((df$Actual - df$Predicted)^2))
-}
-
-# Summary table
-rf_h1_rmse <- data.frame(
-  Predictor_Set = "CAN",
-  Pre_COVID = calc_rmse(pre$forecasts),
-  Post_No_Dummy = calc_rmse(post_no$forecasts),
-  Post_With_Dummy = calc_rmse(post_dummy$forecasts),
-  All_No_Dummy = calc_rmse(no_dummy),
-  All_With_Dummy = calc_rmse(with_dummy)
-)
-
-print(rf_h1_rmse)
-
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-
-plot_RF_h1 <- function(period = "all") {
-  
-  period <- match.arg(period, c("all", "pre", "post"))
-  
-  # Combine predictions
-  df_no <- rbind(
-    pre$forecasts,
-    post_no$forecasts
-  )
-  
-  df_dummy <- rbind(
-    pre$forecasts,
-    post_dummy$forecasts
-  )
-  
-  # Merge both specifications by outcome date
-  plot_df <- inner_join(
-    df_no %>%
-      select(Outcome_Date, Actual, No_Dummy = Predicted),
-    df_dummy %>%
-      select(Outcome_Date, With_Dummy = Predicted),
-    by = "Outcome_Date"
-  )
-  
-  # Filter period
-  if (period == "pre") {
-    plot_df <- filter(
-      plot_df,
-      Outcome_Date <= as.Date("2019-12-01")
-    )
-  } else if (period == "post") {
-    plot_df <- filter(
-      plot_df,
-      Outcome_Date >= as.Date("2020-01-01")
-    )
-  }
-  
-  # RMSE
-  rmse_no <- sqrt(mean(
-    (plot_df$Actual - plot_df$No_Dummy)^2
-  ))
-  
-  rmse_dummy <- sqrt(mean(
-    (plot_df$Actual - plot_df$With_Dummy)^2
-  ))
-  
-  # Plot
-  ggplot(plot_df, aes(x = Outcome_Date)) +
-    
-    geom_line(
-      aes(y = With_Dummy, color = "With Dummy"),
-      linewidth = 0.8
-    ) +
-    
-    geom_line(
-      aes(y = No_Dummy, color = "Without Dummy"),
-      linewidth = 0.8
-    ) +
-    
-    geom_line(
-      aes(y = Actual, color = "Actual"),
-      linewidth = 0.8
-    )
-    
-    scale_color_manual(
-      values = c(
-        "Actual" = "black",
-        "Without Dummy" = "#2563EB",
-        "With Dummy" = "#E69F00"
-      )
-    ) +
-    
-    labs(
-      title = "1-Month Forecast: Random Forest (CAN)",
-      subtitle = paste0(
-        period,
-        " | RMSE (No Dummy) = ", round(rmse_no, 4),
-        " | RMSE (With Dummy) = ", round(rmse_dummy, 4)
-      ),
-      x = "Outcome Date",
-      y = "Employment Rate Change (percentage points)",
-      color = NULL
-    ) +
-    
-    theme_minimal()
-}
-
-plot_RF_h1("pre")
-plot_RF_h1("post")
-plot_RF_h1("all")
