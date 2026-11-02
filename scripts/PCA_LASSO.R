@@ -65,9 +65,9 @@ pcalasso.rolling.window <- function(data, pcols, h, nprev, test_end, window_size
 }
 
 # ---- Run every panel x horizon x spec, caching each result to disk ----
-dir.create("results/PCA_LASSO_batches", recursive = TRUE, showWarnings = FALSE)
+dir.create("results/PCA_LASSO/PCA_LASSO_batches", recursive = TRUE, showWarnings = FALSE)
 run_or_load <- function(key, ...) {
-  f <- file.path("results/PCA_LASSO_batches", paste0(key, ".rds"))
+  f <- file.path("results/PCA_LASSO/PCA_LASSO_batches", paste0(key, ".rds"))
   if (file.exists(f)) return(readRDS(f))
   cat("Running", key, "\n")
   res <- pcalasso.rolling.window(...)
@@ -100,5 +100,5 @@ preds <- do.call(rbind, preds)
 rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Period + Specification,
                   data = preds, FUN = function(e) sqrt(mean(e^2)))
 
-write.csv(preds, "results/PCA_LASSO_predictions.csv", row.names = FALSE)
-write.csv(rmse,  "results/PCA_LASSO_RMSE_summary.csv", row.names = FALSE)
+write.csv(preds, "results/PCA_LASSO/PCA_LASSO_predictions.csv", row.names = FALSE)
+write.csv(rmse,  "results/PCA_LASSO/PCA_LASSO_RMSE_summary.csv", row.names = FALSE)
