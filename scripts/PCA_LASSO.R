@@ -13,4 +13,4 @@ panels <- load_panels()
 raw <- panels$raw
 predictor_cols <- panels$predictor_cols
 
-# ---- next: runpcalasso() goes here (PCA on the predictor block, LASSO on the PCs + active dummy) ----
+# ---- next: PCA-LASSO estimation goes here ----
