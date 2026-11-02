@@ -1,4 +1,4 @@
-# LASSO on raw lagged predictors (pure LASSO; Elastic Net handled by a teammate)
+# LASSO on raw lagged predictors
 # Run from the project root.
 library(glmnet)
 source("functions/data_prep.R")
