@@ -23,7 +23,7 @@ group_of <- function(v) {
 specs <- c(Pre_COVID = "Pre_COVID_No_Dummy", Post_COVID = "Post_COVID_With_Dummy")
 out <- list()
 for (period in names(specs)) for (h in horizons) {
-  sel <- readRDS(sprintf("results/LASSO_batches/CAN_US_%d_%s.rds", h, specs[period]))$selected
+  sel <- readRDS(sprintf("results/LASSO/LASSO_batches/CAN_US_%d_%s.rds", h, specs[period]))$selected
   share <- table(unlist(lapply(sel, group_of))) / length(sel)
   us_terms <- mean(sapply(sel, function(v) mean(grepl("^US_", v[!grepl("^COVID_", v)]))), na.rm = TRUE)
   out[[paste(period, h)]] <- data.frame(Period = period, Horizon = h,
@@ -36,5 +36,5 @@ wide <- reshape(do.call(rbind, out), idvar = c("Group", "Period"), timevar = "Ho
                 direction = "wide", sep = "_h")
 wide[is.na(wide)] <- 0
 wide <- wide[order(wide$Period != "Pre_COVID", grepl("^Share of", wide$Group), -wide$Share_h1), ]
-write.csv(wide, "results/LASSO_group_selection.csv", row.names = FALSE)
+write.csv(wide, "results/LASSO/LASSO_group_selection.csv", row.names = FALSE)
 print(wide, row.names = FALSE)
