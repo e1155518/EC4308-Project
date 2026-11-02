@@ -1,0 +1,37 @@
+"Period","Group","Share_h1","Share_h3","Share_h6","Share_h12"
+"Pre_COVID","CAN Output and Income",1,1,1,0.99
+"Pre_COVID","CAN Prices",1,1,1,1
+"Pre_COVID","US Labor Market",1,1,1,1
+"Pre_COVID","CAN Labor Market",0.94,0.74,0.99,0.94
+"Pre_COVID","US Output and Income",0.52,0.99,0.97,0.92
+"Pre_COVID","US Housing",0.44,1,1,0.83
+"Pre_COVID","CAN Consumption, Orders and Inventories",0.3,0.35,0.31,0.44
+"Pre_COVID","US Prices",0.04,0,0,0
+"Pre_COVID","CAN Stock Market",0.03,0.63,0.34,0.3
+"Pre_COVID","CAN own lag (employment change)",0.02,0.61,0.55,0
+"Pre_COVID","CAN Housing",0.01,0,0,0
+"Pre_COVID","CAN Money and Credit",0,0.01,0.03,0.32
+"Pre_COVID","US Consumption, Orders and Inventories",0,0.77,0.66,0.95
+"Pre_COVID","US Interest Rates and Exchange Rates",0,0.02,0.25,1
+"Pre_COVID","US Money and Credit",0,0.07,0.51,0.89
+"Pre_COVID","US Stock Market",0,0.32,0.98,1
+"Pre_COVID","CAN Interest Rates and Exchange Rates",0,0,0,0.14
+"Pre_COVID","Share of selected terms that are US",0.33,0.47,0.51,0.67
+"Post_COVID","US Labor Market",0.97,1,0.88,0.86
+"Post_COVID","CAN Money and Credit",0.94,0.96,0.87,0.83
+"Post_COVID","CAN Labor Market",0.87,1,0.97,0.75
+"Post_COVID","CAN Output and Income",0.8,0.28,0.22,0.43
+"Post_COVID","CAN Prices",0.77,1,1,0.87
+"Post_COVID","US Prices",0.68,0,0.14,0
+"Post_COVID","US Housing",0.17,0.99,1,0.77
+"Post_COVID","CAN Consumption, Orders and Inventories",0.14,0.57,0.48,0.94
+"Post_COVID","US Interest Rates and Exchange Rates",0.14,0.57,0.68,0.64
+"Post_COVID","US Money and Credit",0.09,0.22,0.1,0.86
+"Post_COVID","US Output and Income",0.07,0.48,0.75,0.84
+"Post_COVID","CAN Interest Rates and Exchange Rates",0.01,0.1,0.16,0.16
+"Post_COVID","US Consumption, Orders and Inventories",0.01,0.17,0.26,0.58
+"Post_COVID","CAN Stock Market",0,0.86,0.59,0.12
+"Post_COVID","CAN own lag (employment change)",0,0.1,0.04,0.06
+"Post_COVID","US Stock Market",0,0.22,0.45,0.83
+"Post_COVID","CAN Housing",0,0,0.03,0.01
+"Post_COVID","Share of selected terms that are US",0.41,0.37,0.44,0.54
