@@ -75,3 +75,7 @@ RF_default,US,1,5
 RF_default,US,3,5
 RF_default,US,6,5
 RF_default,US,12,5
+Zero_Change,AR_only,1,3
+Zero_Change,AR_only,3,3
+Zero_Change,AR_only,6,3
+Zero_Change,AR_only,12,3

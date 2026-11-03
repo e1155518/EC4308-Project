@@ -121,6 +121,9 @@ RF_default,US,1,All,With_Dummy,0.712183670281837,RF_default_RMSE_summary.csv
 RF_default,US,1,Post_COVID,No_Dummy,1.14691690164385,RF_default_RMSE_summary.csv
 RF_default,US,1,Post_COVID,With_Dummy,1.10298868122194,RF_default_RMSE_summary.csv
 RF_default,US,1,Pre_COVID,No_Dummy,0.133170752200575,RF_default_RMSE_summary.csv
+Zero_Change,AR_only,1,All,No_Dummy,0.680410596538338,zero_change_RMSE_long.csv
+Zero_Change,AR_only,1,Post_COVID,No_Dummy,1.05363415260527,zero_change_RMSE_long.csv
+Zero_Change,AR_only,1,Pre_COVID,No_Dummy,0.128062484748658,zero_change_RMSE_long.csv
 AR(1),AR_only,3,All,No_Dummy,1.39351522920926,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,3,All,With_Dummy,1.39988614464995,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,3,Post_COVID,No_Dummy,2.16674325629348,AR_fixed_p_RMSE_long.csv
@@ -243,6 +246,9 @@ RF_default,US,3,All,With_Dummy,1.39571791026143,RF_default_RMSE_summary.csv
 RF_default,US,3,Post_COVID,No_Dummy,2.2790253052734,RF_default_RMSE_summary.csv
 RF_default,US,3,Post_COVID,With_Dummy,2.17288572795408,RF_default_RMSE_summary.csv
 RF_default,US,3,Pre_COVID,No_Dummy,0.185417887045272,RF_default_RMSE_summary.csv
+Zero_Change,AR_only,3,All,No_Dummy,1.33267982012132,zero_change_RMSE_long.csv
+Zero_Change,AR_only,3,Post_COVID,No_Dummy,2.07518115151285,zero_change_RMSE_long.csv
+Zero_Change,AR_only,3,Pre_COVID,No_Dummy,0.173493515728975,zero_change_RMSE_long.csv
 AR(1),AR_only,6,All,No_Dummy,1.91397710532519,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,6,All,With_Dummy,1.82685627400496,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,6,Post_COVID,No_Dummy,2.97311289014336,AR_fixed_p_RMSE_long.csv
@@ -365,6 +371,9 @@ RF_default,US,6,All,With_Dummy,1.69945878701393,RF_default_RMSE_summary.csv
 RF_default,US,6,Post_COVID,No_Dummy,2.81765983347332,RF_default_RMSE_summary.csv
 RF_default,US,6,Post_COVID,With_Dummy,2.63497309355127,RF_default_RMSE_summary.csv
 RF_default,US,6,Pre_COVID,No_Dummy,0.300438470609947,RF_default_RMSE_summary.csv
+Zero_Change,AR_only,6,All,No_Dummy,1.59879762514017,zero_change_RMSE_long.csv
+Zero_Change,AR_only,6,Post_COVID,No_Dummy,2.48397764231811,zero_change_RMSE_long.csv
+Zero_Change,AR_only,6,Pre_COVID,No_Dummy,0.25,zero_change_RMSE_long.csv
 AR(1),AR_only,12,All,No_Dummy,2.03226933275568,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,12,All,With_Dummy,2.08393401988043,AR_fixed_p_RMSE_long.csv
 AR(1),AR_only,12,Post_COVID,No_Dummy,3.13246490896142,AR_fixed_p_RMSE_long.csv
@@ -487,3 +496,6 @@ RF_default,US,12,All,With_Dummy,2.00733103910623,RF_default_RMSE_summary.csv
 RF_default,US,12,Post_COVID,No_Dummy,3.47675939438184,RF_default_RMSE_summary.csv
 RF_default,US,12,Post_COVID,With_Dummy,3.09433583350593,RF_default_RMSE_summary.csv
 RF_default,US,12,Pre_COVID,No_Dummy,0.450508400684407,RF_default_RMSE_summary.csv
+Zero_Change,AR_only,12,All,No_Dummy,1.81893394878956,zero_change_RMSE_long.csv
+Zero_Change,AR_only,12,Post_COVID,No_Dummy,2.81236915959749,zero_change_RMSE_long.csv
+Zero_Change,AR_only,12,Pre_COVID,No_Dummy,0.365923489270639,zero_change_RMSE_long.csv

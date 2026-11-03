@@ -50,13 +50,14 @@ files <- list(
   ElasticNet_a05 = 'ElasticNet_a05/ElasticNet_a05_RMSE_summary.csv',
   ElasticNet_tuned = 'ElasticNet_tuned/ElasticNet_tuned_RMSE_summary.csv',
   Change_Persistence = 'Change_Persistence_RMSE_long.csv',
+  Zero_Change = "zero_change_RMSE_long.csv",
   Historical_Average_Rolling = 'Historical_Average_Rolling_RMSE_long.csv'
 )
 
 missing_files <- names(files)[!file.exists(file.path(results_dir, unlist(files)))]
 if (length(missing_files)) stop('Missing required files: ', paste(missing_files, collapse = ', '))
 
-long_models <- c('AR_fixed', 'AR_dynamic', 'LASSO', 'PCA_LASSO', 'ElasticNet_a05', 'ElasticNet_tuned', 'Change_Persistence', 'Historical_Average_Rolling')
+long_models <- c("AR_fixed", "AR_dynamic", "LASSO", "PCA_LASSO", "ElasticNet_a05", "ElasticNet_tuned", "Change_Persistence", "Historical_Average_Rolling", "Zero_Change")
 
 rmse_master <- bind_rows(lapply(names(files), function(m) {
   path <- file.path(results_dir, files[[m]])

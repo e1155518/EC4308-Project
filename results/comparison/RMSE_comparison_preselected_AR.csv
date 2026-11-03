@@ -1,4 +1,5 @@
 Model,Predictor_Set,Horizon,Period,Specification,RMSE,Source_File
+Zero_Change,AR_only,1,All,No_Dummy,0.680410596538338,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,1,All,No_Dummy,0.681423488601832,Historical_Average_Rolling_RMSE_long.csv
 RF_default,US,1,All,No_Dummy,0.7399716654348,RF_default_RMSE_summary.csv
 RF_default,CAN_US,1,All,No_Dummy,0.744117926565117,RF_default_RMSE_summary.csv
@@ -11,6 +12,7 @@ RF_default,US,1,All,With_Dummy,0.712183670281837,RF_default_RMSE_summary.csv
 RF_default,CAN_US,1,All,With_Dummy,0.720495487376647,RF_default_RMSE_summary.csv
 RF_default,CAN,1,All,With_Dummy,0.724509080575456,RF_default_RMSE_summary.csv
 AR_dynamic,AR_only,1,All,With_Dummy,0.801708322923403,AR_dynamic_p_RMSE_long.csv
+Zero_Change,AR_only,1,Post_COVID,No_Dummy,1.05363415260527,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,1,Post_COVID,No_Dummy,1.05510431110171,Historical_Average_Rolling_RMSE_long.csv
 ElasticNet_tuned,US,1,Post_COVID,No_Dummy,1.12308309966166,ElasticNet_tuned/ElasticNet_tuned_RMSE_summary.csv
 LASSO,US,1,Post_COVID,No_Dummy,1.12308309966166,LASSO/LASSO_RMSE_summary.csv
@@ -47,6 +49,7 @@ PCA_LASSO,CAN_US,1,Post_COVID,With_Dummy,1.1214443297114,PCA_LASSO/PCA_LASSO_RMS
 RF_default,CAN,1,Post_COVID,With_Dummy,1.12304948231458,RF_default_RMSE_summary.csv
 PCA_LASSO,US,1,Post_COVID,With_Dummy,1.14393896585406,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
 AR_dynamic,AR_only,1,Post_COVID,With_Dummy,1.24340895322511,AR_dynamic_p_RMSE_long.csv
+Zero_Change,AR_only,1,Pre_COVID,No_Dummy,0.128062484748658,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,1,Pre_COVID,No_Dummy,0.128810118555109,Historical_Average_Rolling_RMSE_long.csv
 RF_default,CAN,1,Pre_COVID,No_Dummy,0.129799702741057,RF_default_RMSE_summary.csv
 PCA_LASSO,CAN_US,1,Pre_COVID,No_Dummy,0.130013576520142,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
@@ -66,6 +69,7 @@ AR_fixed_preselected_AR(1),AR_only,1,Pre_COVID,No_Dummy,0.132977475823747,AR_fix
 RF_default,US,1,Pre_COVID,No_Dummy,0.133170752200575,RF_default_RMSE_summary.csv
 AR_dynamic,AR_only,1,Pre_COVID,No_Dummy,0.13942316164406,AR_dynamic_p_RMSE_long.csv
 Change_Persistence,AR_only,1,Pre_COVID,No_Dummy,0.195703857907811,Change_Persistence_RMSE_long.csv
+Zero_Change,AR_only,3,All,No_Dummy,1.33267982012132,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,3,All,No_Dummy,1.33781789518419,Historical_Average_Rolling_RMSE_long.csv
 RF_default,CAN_US,3,All,No_Dummy,1.43171531074182,RF_default_RMSE_summary.csv
 RF_default,CAN,3,All,No_Dummy,1.46181270789729,RF_default_RMSE_summary.csv
@@ -78,6 +82,7 @@ RF_default,US,3,All,With_Dummy,1.39571791026143,RF_default_RMSE_summary.csv
 RF_default,CAN,3,All,With_Dummy,1.40474508757094,RF_default_RMSE_summary.csv
 AR_fixed_preselected_AR(4),AR_only,3,All,With_Dummy,1.63153445586832,AR_fixed_p_RMSE_long.csv
 AR_dynamic,AR_only,3,All,With_Dummy,1.65459953414034,AR_dynamic_p_RMSE_long.csv
+Zero_Change,AR_only,3,Post_COVID,No_Dummy,2.07518115151285,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,3,Post_COVID,No_Dummy,2.08280292614242,Historical_Average_Rolling_RMSE_long.csv
 ElasticNet_a05,US,3,Post_COVID,No_Dummy,2.10608299209732,ElasticNet_a05/ElasticNet_a05_RMSE_summary.csv
 ElasticNet_tuned,US,3,Post_COVID,No_Dummy,2.10623633152104,ElasticNet_tuned/ElasticNet_tuned_RMSE_summary.csv
@@ -115,6 +120,7 @@ PCA_LASSO,US,3,Post_COVID,With_Dummy,2.32461149284629,PCA_LASSO/PCA_LASSO_RMSE_s
 AR_fixed_preselected_AR(4),AR_only,3,Post_COVID,With_Dummy,2.54330039865623,AR_fixed_p_RMSE_long.csv
 AR_dynamic,AR_only,3,Post_COVID,With_Dummy,2.57947224605002,AR_dynamic_p_RMSE_long.csv
 PCA_LASSO,CAN_US,3,Pre_COVID,No_Dummy,0.171757582991199,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
+Zero_Change,AR_only,3,Pre_COVID,No_Dummy,0.173493515728975,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,3,Pre_COVID,No_Dummy,0.17726228541098701,Historical_Average_Rolling_RMSE_long.csv
 ElasticNet_tuned,US,3,Pre_COVID,No_Dummy,0.177585079908147,ElasticNet_tuned/ElasticNet_tuned_RMSE_summary.csv
 LASSO,US,3,Pre_COVID,No_Dummy,0.179291649797789,LASSO/LASSO_RMSE_summary.csv
@@ -133,6 +139,7 @@ LASSO,CAN,3,Pre_COVID,No_Dummy,0.186612692797667,LASSO/LASSO_RMSE_summary.csv
 AR_fixed_preselected_AR(4),AR_only,3,Pre_COVID,No_Dummy,0.188252057288008,AR_fixed_p_RMSE_long.csv
 AR_dynamic,AR_only,3,Pre_COVID,No_Dummy,0.188878738982593,AR_dynamic_p_RMSE_long.csv
 Change_Persistence,AR_only,3,Pre_COVID,No_Dummy,0.2343074902772,Change_Persistence_RMSE_long.csv
+Zero_Change,AR_only,6,All,No_Dummy,1.59879762514017,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,6,All,No_Dummy,1.60663190909327,Historical_Average_Rolling_RMSE_long.csv
 RF_default,CAN,6,All,No_Dummy,1.76992086182702,RF_default_RMSE_summary.csv
 RF_default,CAN_US,6,All,No_Dummy,1.77465033246178,RF_default_RMSE_summary.csv
@@ -145,6 +152,7 @@ RF_default,CAN_US,6,All,With_Dummy,1.6897136348667,RF_default_RMSE_summary.csv
 RF_default,US,6,All,With_Dummy,1.69945878701393,RF_default_RMSE_summary.csv
 AR_dynamic,AR_only,6,All,With_Dummy,2.04560602438631,AR_dynamic_p_RMSE_long.csv
 AR_fixed_preselected_AR(4),AR_only,6,All,With_Dummy,2.12834777286082,AR_fixed_p_RMSE_long.csv
+Zero_Change,AR_only,6,Post_COVID,No_Dummy,2.48397764231811,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,6,Post_COVID,No_Dummy,2.49496913160332,Historical_Average_Rolling_RMSE_long.csv
 ElasticNet_a05,US,6,Post_COVID,No_Dummy,2.60242335669281,ElasticNet_a05/ElasticNet_a05_RMSE_summary.csv
 ElasticNet_tuned,US,6,Post_COVID,No_Dummy,2.61768832481592,ElasticNet_tuned/ElasticNet_tuned_RMSE_summary.csv
@@ -181,6 +189,7 @@ PCA_LASSO,US,6,Post_COVID,With_Dummy,2.97321248606477,PCA_LASSO/PCA_LASSO_RMSE_s
 PCA_LASSO,CAN_US,6,Post_COVID,With_Dummy,3.01014471088492,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
 AR_dynamic,AR_only,6,Post_COVID,With_Dummy,3.18348334587327,AR_dynamic_p_RMSE_long.csv
 AR_fixed_preselected_AR(4),AR_only,6,Post_COVID,With_Dummy,3.31421534175453,AR_fixed_p_RMSE_long.csv
+Zero_Change,AR_only,6,Pre_COVID,No_Dummy,0.25,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,6,Pre_COVID,No_Dummy,0.259188592812961,Historical_Average_Rolling_RMSE_long.csv
 PCA_LASSO,CAN_US,6,Pre_COVID,No_Dummy,0.263452269911605,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
 ElasticNet_a05,US,6,Pre_COVID,No_Dummy,0.264195692228662,ElasticNet_a05/ElasticNet_a05_RMSE_summary.csv
@@ -200,6 +209,7 @@ AR_dynamic,AR_only,6,Pre_COVID,No_Dummy,0.281000150457632,AR_dynamic_p_RMSE_long
 RF_default,CAN_US,6,Pre_COVID,No_Dummy,0.287975633619505,RF_default_RMSE_summary.csv
 RF_default,US,6,Pre_COVID,No_Dummy,0.300438470609947,RF_default_RMSE_summary.csv
 Change_Persistence,AR_only,6,Pre_COVID,No_Dummy,0.331511689085016,Change_Persistence_RMSE_long.csv
+Zero_Change,AR_only,12,All,No_Dummy,1.81893394878956,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,12,All,No_Dummy,1.83218347738285,Historical_Average_Rolling_RMSE_long.csv
 AR_dynamic,AR_only,12,All,No_Dummy,2.10784698351453,AR_dynamic_p_RMSE_long.csv
 RF_default,US,12,All,No_Dummy,2.24841540265816,RF_default_RMSE_summary.csv
@@ -212,6 +222,7 @@ RF_default,CAN_US,12,All,With_Dummy,2.08580962793939,RF_default_RMSE_summary.csv
 RF_default,CAN,12,All,With_Dummy,2.1730258392523,RF_default_RMSE_summary.csv
 AR_dynamic,AR_only,12,All,With_Dummy,2.23712327186133,AR_dynamic_p_RMSE_long.csv
 AR_fixed_preselected_AR(4),AR_only,12,All,With_Dummy,2.39886859193278,AR_fixed_p_RMSE_long.csv
+Zero_Change,AR_only,12,Post_COVID,No_Dummy,2.81236915959749,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,12,Post_COVID,No_Dummy,2.82831360624219,Historical_Average_Rolling_RMSE_long.csv
 PCA_LASSO,CAN,12,Post_COVID,No_Dummy,2.92506869517789,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
 ElasticNet_a05,US,12,Post_COVID,No_Dummy,2.92593234108751,ElasticNet_a05/ElasticNet_a05_RMSE_summary.csv
@@ -248,6 +259,7 @@ PCA_LASSO,CAN_US,12,Post_COVID,With_Dummy,3.34979299903478,PCA_LASSO/PCA_LASSO_R
 RF_default,CAN,12,Post_COVID,With_Dummy,3.36380926148271,RF_default_RMSE_summary.csv
 AR_dynamic,AR_only,12,Post_COVID,With_Dummy,3.45922827624741,AR_dynamic_p_RMSE_long.csv
 AR_fixed_preselected_AR(4),AR_only,12,Post_COVID,With_Dummy,3.71754985065555,AR_fixed_p_RMSE_long.csv
+Zero_Change,AR_only,12,Pre_COVID,No_Dummy,0.365923489270639,zero_change_RMSE_long.csv
 Historical_Average_Rolling,AR_only,12,Pre_COVID,No_Dummy,0.391915575191059,Historical_Average_Rolling_RMSE_long.csv
 RF_default,CAN,12,Pre_COVID,No_Dummy,0.415635655170353,RF_default_RMSE_summary.csv
 PCA_LASSO,CAN,12,Pre_COVID,No_Dummy,0.418373072085072,PCA_LASSO/PCA_LASSO_RMSE_summary.csv
