@@ -1,0 +1,13 @@
+"Horizon","Model","Specification","Period","RMSE"
+1,"Historical_Average_Rolling","No_Dummy","Post_COVID",1.05510431110171
+1,"Historical_Average_Rolling","No_Dummy","Pre_COVID",0.128810118555109
+3,"Historical_Average_Rolling","No_Dummy","Post_COVID",2.08280292614242
+3,"Historical_Average_Rolling","No_Dummy","Pre_COVID",0.177262285410987
+6,"Historical_Average_Rolling","No_Dummy","Post_COVID",2.49496913160332
+6,"Historical_Average_Rolling","No_Dummy","Pre_COVID",0.259188592812961
+12,"Historical_Average_Rolling","No_Dummy","Post_COVID",2.82831360624219
+12,"Historical_Average_Rolling","No_Dummy","Pre_COVID",0.391915575191059
+1,"Historical_Average_Rolling","No_Dummy","All",0.681423488601832
+3,"Historical_Average_Rolling","No_Dummy","All",1.33781789518419
+6,"Historical_Average_Rolling","No_Dummy","All",1.60663190909327
+12,"Historical_Average_Rolling","No_Dummy","All",1.83218347738285
