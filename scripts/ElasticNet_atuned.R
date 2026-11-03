@@ -1,5 +1,6 @@
-# Elastic net with (alpha, lambda) tuned by information criterion on the FIRST training sample of each
-# rolling run, then held fixed for all remaining windows in that run.
+# Elastic net: alpha is tuned ONCE (by information criterion, jointly with lambda, on the FIRST training
+# sample of each rolling run) and then held fixed; lambda is re-picked by IC in EVERY window.
+
 library(glmnet)
 source("functions/data_prep.R")
 panels <- load_panels()
@@ -10,7 +11,7 @@ alpha.grid <- seq(0, 1, by = 0.1)
 out_dir <- "results/ElasticNet_tuned"
 
 # ---- Effective degrees of freedom along one glmnet path ----
-# alpha = 1: number of nonzero coefficients (as in LASSO.R).
+# alpha = 1: number of nonzero coefficients.
 # alpha < 1: with active set A and standardized, centred X (glmnet's 1/n scaling),
 #   df = tr[ X_A (X_A'X_A + n*lambda*(1-alpha) I)^-1 X_A' ]
 # alpha = 0: computed from the singular values of X (all variables active).
@@ -30,10 +31,10 @@ enet_df <- function(fit, a, Xs, G) {
 }
 
 # ---- Fit one window, return the h-step forecast from its last row ----
-# par = NULL: tune (alpha, lambda) on this window by IC over alpha.grid x each alpha's lambda path.
-# par = list(alpha, lambda): skip tuning and use those values.
+# alpha = NULL: search alpha.grid (and each alpha's lambda path) by IC, i.e. tune the (alpha, lambda) pair.
+# alpha given:  keep that alpha and pick lambda by IC along its path.
 # Targets Employ_Rate_diff_h{h} are already the change from t to t+h, so only predictors get lagged.
-run_enet_window <- function(y, X, dum, h, par = NULL, ic = "bic") {
+run_enet_window <- function(y, X, dum, h, alpha = NULL, ic = "bic") {
   Xl <- embed(as.matrix(X), n_lags)                     # row = [X_t, X_t-1, X_t-2, X_t-3]
   colnames(Xl) <- paste0(rep(colnames(X), n_lags), "_lag", rep(0:(n_lags - 1), each = ncol(X)))
   
@@ -50,42 +51,35 @@ run_enet_window <- function(y, X, dum, h, par = NULL, ic = "bic") {
     X_out <- cbind(X_out, matrix(0, 1, sum(active)))
   }
   
-  if (is.null(par)) {
-    n <- length(y_tr)
-    
-    # Standardize the way glmnet does internally (1/n standard deviation) to compute df
-    sdn <- apply(X_tr, 2, function(v) sqrt(mean((v - mean(v))^2)))
-    sdn[sdn == 0] <- 1
-    Xs <- scale(X_tr, center = TRUE, scale = sdn)
-    G  <- crossprod(Xs)
-    
-    # Information criterion along each alpha's full lambda path
-    cands <- lapply(alpha.grid, function(a) {
-      fit <- glmnet(X_tr, y_tr, alpha = a)
-      k   <- enet_df(fit, a, Xs, G) + 1                 # effective df + intercept
-      rss <- colSums((y_tr - predict(fit, X_tr))^2)
-      pen <- switch(ic, bic = log(n) * k, aic = 2 * k, aicc = 2 * k + 2 * k * (k + 1) / pmax(n - k - 1, 1))
-      list(fit = fit, crit = n * log(rss / n) + pen)
-    })
-    
-    # Pick the (alpha, lambda) pair with the smallest criterion
-    best  <- which.min(sapply(cands, function(cd) min(cd$crit)))
-    fit   <- cands[[best]]$fit
-    alpha <- alpha.grid[best]
-    lam   <- fit$lambda[which.min(cands[[best]]$crit)]
-  } else {
-    alpha <- par$alpha
-    lam   <- par$lambda
-    # Decreasing path that ends at the fixed lambda (starting above it helps glmnet's warm starts)
-    fit <- glmnet(X_tr, y_tr, alpha = alpha, lambda = lam * 10^seq(1, 0, length.out = 20))
-  }
+  n <- length(y_tr)
+  
+  # Standardize the way glmnet does internally (1/n standard deviation) to compute df
+  sdn <- apply(X_tr, 2, function(v) sqrt(mean((v - mean(v))^2)))
+  sdn[sdn == 0] <- 1
+  Xs <- scale(X_tr, center = TRUE, scale = sdn)
+  G  <- crossprod(Xs)
+  
+  # Information criterion along the lambda path of every candidate alpha
+  alphas <- if (is.null(alpha)) alpha.grid else alpha
+  cands <- lapply(alphas, function(a) {
+    fit <- glmnet(X_tr, y_tr, alpha = a)
+    k   <- enet_df(fit, a, Xs, G) + 1                   # effective df + intercept
+    rss <- colSums((y_tr - predict(fit, X_tr))^2)
+    pen <- switch(ic, bic = log(n) * k, aic = 2 * k, aicc = 2 * k + 2 * k * (k + 1) / pmax(n - k - 1, 1))
+    list(fit = fit, crit = n * log(rss / n) + pen)
+  })
+  
+  # Pick the (alpha, lambda) pair with the smallest criterion (a single alpha leaves just the lambda choice)
+  best <- which.min(sapply(cands, function(cd) min(cd$crit)))
+  fit  <- cands[[best]]$fit
+  lam  <- fit$lambda[which.min(cands[[best]]$crit)]
   
   b <- coef(fit, s = lam)[-1, 1]
   list(pred = as.numeric(predict(fit, X_out, s = lam)), selected = names(b)[b != 0],
-       alpha = alpha, lambda = lam)
+       alpha = alphas[best], lambda = lam)
 }
 
-# ---- Rolling window: tune on the first window, reuse (alpha, lambda) for the rest ----
+# ---- Rolling window: tune alpha on the first window, re-pick lambda in every window ----
 enet.rolling.window <- function(data, pcols, h, nprev, test_end, window_size = NULL,
                                 use_dummy = FALSE, ic = "bic") {
   y_name <- paste0("Employ_Rate_diff_h", h)
@@ -94,14 +88,13 @@ enet.rolling.window <- function(data, pcols, h, nprev, test_end, window_size = N
   origin_idx  <- outcome_idx - h
   if (is.null(window_size)) window_size <- min(origin_idx)  # fixed window length, rolled forward
   
-  fit_window <- function(o, par) {
+  fit_window <- function(o, alpha) {
     w <- data[(o - window_size + 1):o, ]
-    run_enet_window(w[[y_name]], w[, pcols], w[, d_cols, drop = FALSE], h, par, ic)
+    run_enet_window(w[[y_name]], w[, pcols], w[, d_cols, drop = FALSE], h, alpha, ic)
   }
   
-  first <- fit_window(origin_idx[1], NULL)              # tuning happens here only
-  par   <- list(alpha = first$alpha, lambda = first$lambda)
-  fits  <- c(list(first), lapply(origin_idx[-1], fit_window, par = par))
+  first <- fit_window(origin_idx[1], NULL)              # alpha search happens here only
+  fits  <- c(list(first), lapply(origin_idx[-1], fit_window, alpha = first$alpha))
   
   pred   <- sapply(fits, `[[`, "pred")
   actual <- data[[y_name]][origin_idx]                  # change from origin to outcome date
@@ -157,4 +150,4 @@ rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Perio
 
 write.csv(preds,   file.path(out_dir, "ElasticNet_tuned_predictions.csv"), row.names = FALSE)
 write.csv(rmse,    file.path(out_dir, "ElasticNet_tuned_RMSE_summary.csv"), row.names = FALSE)
-write.csv(choices, file.path(out_dir, "ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE)  # chosen pair (constant within a run) and #selected per window
+write.csv(choices, file.path(out_dir, "ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE)  # alpha (constant within a run), lambda and #selected per window
