@@ -1,25 +1,12 @@
 # Elastic net with alpha FIXED at 0.5; lambda chosen by information criterion in every window
 
 library(glmnet)
+library(HDeconometrics)     
 source("functions/data_prep.R")
 panels <- load_panels()
 
 alpha.fixed <- 0.5          # mixing parameter by design (1 = LASSO, 0 = ridge)
 out_dir <- "results/ElasticNet_a05"
-
-# ---- Effective degrees of freedom along one glmnet path (alpha < 1) ----
-# With active set A and standardized, centred X (glmnet's 1/n scaling):
-#   df = tr[ X_A (X_A'X_A + n*lambda*(1-alpha) I)^-1 X_A' ]
-# which reduces to the number of nonzeros when alpha = 1. G = X'X is computed once per window.
-enet_df <- function(fit, a, G, n) {
-  if (a == 1) return(fit$df)
-  sapply(seq_along(fit$lambda), function(k) {
-    A <- which(fit$beta[, k] != 0)
-    if (!length(A)) return(0)
-    GA <- G[A, A, drop = FALSE]
-    sum(GA * chol2inv(chol(GA + n * fit$lambda[k] * (1 - a) * diag(length(A)))))
-  })
-}
 
 # ---- Fit one window, return the h-step forecast from its last row ----
 # Targets Employ_Rate_diff_h{h} are already the change from t to t+h, so only predictors get lagged.
@@ -40,22 +27,14 @@ run_enet_window <- function(y, X, dum, h, ic = "bic") {
     X_out <- cbind(X_out, matrix(0, 1, sum(active)))
   }
   
-  n <- length(y_tr)
-  
-  # Standardize the way glmnet does internally (1/n standard deviation) to compute df
-  sdn <- apply(X_tr, 2, function(v) sqrt(mean((v - mean(v))^2)))
-  sdn[sdn == 0] <- 1
-  Xs <- scale(X_tr, center = TRUE, scale = sdn)
-  
-  # Choose lambda by information criterion along glmnet's full lambda path
-  fit <- glmnet(X_tr, y_tr, alpha = alpha.fixed)
-  k   <- enet_df(fit, alpha.fixed, crossprod(Xs), n) + 1  # effective df + intercept
-  rss <- colSums((y_tr - predict(fit, X_tr))^2)
-  pen <- switch(ic, bic = log(n) * k, aic = 2 * k, aicc = 2 * k + 2 * k * (k + 1) / pmax(n - k - 1, 1))
-  lam <- fit$lambda[which.min(n * log(rss / n) + pen)]
-  
-  b <- coef(fit, s = lam)[-1, 1]
-  list(pred = as.numeric(predict(fit, X_out, s = lam)), selected = names(b)[b != 0],
+  # Choose lambda by information criterion along glmnet's full lambda path (Lecture 4 / Medeiros et al. 2019).
+  # ic.glmnet counts df as the number of nonzero coefficients (+ intercept).
+  # ic.glmnet returns every lambda tied at the minimum (e.g. all-zero fits), so take the first one.
+  fit <- ic.glmnet(X_tr, y_tr, crit = ic, alpha = alpha.fixed)
+  lam <- fit$glmnet$lambda[which.min(fit$ic.range)]
+
+  b <- coef(fit$glmnet, s = lam)[-1, 1]
+  list(pred = as.numeric(predict(fit$glmnet, X_out, s = lam)), selected = names(b)[b != 0],
        alpha = alpha.fixed, lambda = lam)
 }
 
@@ -125,6 +104,6 @@ choices <- do.call(rbind, choices)
 rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Period + Specification,
                   data = preds, FUN = function(e) sqrt(mean(e^2)))
 
-write.csv(preds,   file.path(out_dir, "ElasticNet_a05_predictions.csv"), row.names = FALSE)
-write.csv(rmse,    file.path(out_dir, "ElasticNet_a05_RMSE_summary.csv"), row.names = FALSE)
-write.csv(choices, file.path(out_dir, "ElasticNet_a05_lambda_choice.csv"), row.names = FALSE)  # lambda and #selected per window
+write.csv(preds,   file.path(out_dir, "level_ElasticNet_a05_predictions.csv"), row.names = FALSE)
+write.csv(rmse,    file.path(out_dir, "level_ElasticNet_a05_RMSE_summary.csv"), row.names = FALSE)
+write.csv(choices, file.path(out_dir, "level_ElasticNet_a05_lambda_choice.csv"), row.names = FALSE)  # lambda and #selected per window

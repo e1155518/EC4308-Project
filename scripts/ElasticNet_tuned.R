@@ -2,33 +2,14 @@
 # sample of each rolling run) and then held fixed; lambda is re-picked by IC in EVERY window.
 
 library(glmnet)
+library(HDeconometrics)    
 source("functions/data_prep.R")
 panels <- load_panels()
 
 # Candidate mixing parameters. glmnet has no default grid for alpha; 0, 0.1, ..., 1 (0 = ridge, 1 = LASSO)
 # is the usual choice (it is also what glmnetUtils::cva.glmnet uses). Make it coarser/finer as you like.
 alpha.grid <- seq(0, 1, by = 0.1)
-out_dir <- "results/ElasticNet_tuned"
-
-# ---- Effective degrees of freedom along one glmnet path ----
-# alpha = 1: number of nonzero coefficients.
-# alpha < 1: with active set A and standardized, centred X (glmnet's 1/n scaling),
-#   df = tr[ X_A (X_A'X_A + n*lambda*(1-alpha) I)^-1 X_A' ]
-# alpha = 0: computed from the singular values of X (all variables active).
-enet_df <- function(fit, a, Xs, G) {
-  n <- nrow(Xs)
-  if (a == 1) return(fit$df)
-  if (a == 0) {
-    d2 <- svd(Xs, nu = 0, nv = 0)$d^2
-    return(sapply(n * fit$lambda, function(cc) sum(d2 / (d2 + cc))))
-  }
-  sapply(seq_along(fit$lambda), function(k) {
-    A <- which(fit$beta[, k] != 0)
-    if (!length(A)) return(0)
-    GA <- G[A, A, drop = FALSE]
-    sum(GA * chol2inv(chol(GA + n * fit$lambda[k] * (1 - a) * diag(length(A)))))
-  })
-}
+out_dir <- "results/level/ElasticNet_tuned"
 
 # ---- Fit one window, return the h-step forecast from its last row ----
 # alpha = NULL: search alpha.grid (and each alpha's lambda path) by IC, i.e. tune the (alpha, lambda) pair.
@@ -51,29 +32,17 @@ run_enet_window <- function(y, X, dum, h, alpha = NULL, ic = "bic") {
     X_out <- cbind(X_out, matrix(0, 1, sum(active)))
   }
   
-  n <- length(y_tr)
-  
-  # Standardize the way glmnet does internally (1/n standard deviation) to compute df
-  sdn <- apply(X_tr, 2, function(v) sqrt(mean((v - mean(v))^2)))
-  sdn[sdn == 0] <- 1
-  Xs <- scale(X_tr, center = TRUE, scale = sdn)
-  G  <- crossprod(Xs)
-  
-  # Information criterion along the lambda path of every candidate alpha
+  # Information criterion along the lambda path of every candidate alpha (ic.glmnet picks lambda per alpha).
+  # ic.glmnet counts df as the number of nonzero coefficients for alpha > 0 and uses effective df for alpha = 0.
   alphas <- if (is.null(alpha)) alpha.grid else alpha
-  cands <- lapply(alphas, function(a) {
-    fit <- glmnet(X_tr, y_tr, alpha = a)
-    k   <- enet_df(fit, a, Xs, G) + 1                   # effective df + intercept
-    rss <- colSums((y_tr - predict(fit, X_tr))^2)
-    pen <- switch(ic, bic = log(n) * k, aic = 2 * k, aicc = 2 * k + 2 * k * (k + 1) / pmax(n - k - 1, 1))
-    list(fit = fit, crit = n * log(rss / n) + pen)
-  })
-  
-  # Pick the (alpha, lambda) pair with the smallest criterion (a single alpha leaves just the lambda choice)
-  best <- which.min(sapply(cands, function(cd) min(cd$crit)))
-  fit  <- cands[[best]]$fit
-  lam  <- fit$lambda[which.min(cands[[best]]$crit)]
-  
+  cands  <- lapply(alphas, function(a) ic.glmnet(X_tr, y_tr, crit = ic, alpha = a))
+
+  # Pick the (alpha, lambda) pair with the smallest criterion (a single alpha leaves just the lambda choice).
+  # ic.glmnet returns every lambda tied at the minimum (e.g. all-zero fits), so take the first one.
+  best <- which.min(sapply(cands, function(fit) min(fit$ic.range)))
+  fit  <- cands[[best]]$glmnet
+  lam  <- fit$lambda[which.min(cands[[best]]$ic.range)]
+
   b <- coef(fit, s = lam)[-1, 1]
   list(pred = as.numeric(predict(fit, X_out, s = lam)), selected = names(b)[b != 0],
        alpha = alphas[best], lambda = lam)
@@ -148,6 +117,6 @@ choices <- do.call(rbind, choices)
 rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Period + Specification,
                   data = preds, FUN = function(e) sqrt(mean(e^2)))
 
-write.csv(preds,   file.path(out_dir, "ElasticNet_tuned_predictions.csv"), row.names = FALSE)
-write.csv(rmse,    file.path(out_dir, "ElasticNet_tuned_RMSE_summary.csv"), row.names = FALSE)
-write.csv(choices, file.path(out_dir, "ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE)  # alpha (constant within a run), lambda and #selected per window
+write.csv(preds,   file.path(out_dir, "level_ElasticNet_tuned_predictions.csv"), row.names = FALSE)
+write.csv(rmse,    file.path(out_dir, "level_ElasticNet_tuned_RMSE_summary.csv"), row.names = FALSE)
+write.csv(choices, file.path(out_dir, "level_ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE)  # alpha (constant within a run), lambda and #selected per window
