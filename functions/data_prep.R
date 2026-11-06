@@ -27,6 +27,7 @@ load_panels <- function() {
     d <- as.data.frame(read_excel(f))
     d$Date <- as.Date(d$Date)
     stopifnot(identical(d$Date, seq(min(d$Date), max(d$Date), by = "month")))  # clean monthly dates
+    for (h in horizons) d[[paste0("Employ_Rate_lead_h", h)]] <- c(tail(d$Employ_Rate, -h), rep(NA, h))  # level h months ahead (level targets)
     add_covid_dummies(d)
   })
   # Predictors: everything except Date, employment targets/level and COVID columns,
