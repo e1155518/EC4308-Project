@@ -1,0 +1,701 @@
+"Predictor_Set","Horizon","Period","Specification","Country_Group","Group","Mean_Percent"
+"CAN",1,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",2.94679962033521
+"CAN",1,"Post_COVID","No_Dummy","CAN","Housing",0.0625364898510222
+"CAN",1,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.333712215542359
+"CAN",1,"Post_COVID","No_Dummy","CAN","Labor Market",1.79774085154637
+"CAN",1,"Post_COVID","No_Dummy","CAN","Money and Credit",3.06250273156722
+"CAN",1,"Post_COVID","No_Dummy","CAN","Output and Income",0.890510091000517
+"CAN",1,"Post_COVID","No_Dummy","CAN","Own Employment Rate",88.9691987027522
+"CAN",1,"Post_COVID","No_Dummy","CAN","Prices",1.76555595367658
+"CAN",1,"Post_COVID","No_Dummy","CAN","Stock Market",0.171443343728472
+"CAN",1,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",2.91620791686703
+"CAN",1,"Post_COVID","With_Dummy","CAN","Housing",0.0644956459382047
+"CAN",1,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.34520380125219
+"CAN",1,"Post_COVID","With_Dummy","CAN","Labor Market",1.7518208203212
+"CAN",1,"Post_COVID","With_Dummy","CAN","Money and Credit",3.07940293233695
+"CAN",1,"Post_COVID","With_Dummy","CAN","Output and Income",0.915064906469053
+"CAN",1,"Post_COVID","With_Dummy","CAN","Own Employment Rate",88.9814607629002
+"CAN",1,"Post_COVID","With_Dummy","CAN","Prices",1.77293263569423
+"CAN",1,"Post_COVID","With_Dummy","CAN","Stock Market",0.173410578220888
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",0.626359973997013
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Housing",0.0234518202863949
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.0992364856932943
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Labor Market",0.131572817516842
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Money and Credit",0.127308095997491
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Output and Income",0.115863152059772
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",98.6618987843371
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Prices",0.184208564358485
+"CAN",1,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0301003057536282
+"CAN",3,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",11.5706990457393
+"CAN",3,"Post_COVID","No_Dummy","CAN","Housing",0.172126440015183
+"CAN",3,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.849540075571661
+"CAN",3,"Post_COVID","No_Dummy","CAN","Labor Market",4.13767699486513
+"CAN",3,"Post_COVID","No_Dummy","CAN","Money and Credit",1.47559234364728
+"CAN",3,"Post_COVID","No_Dummy","CAN","Output and Income",1.16684272855239
+"CAN",3,"Post_COVID","No_Dummy","CAN","Own Employment Rate",76.8259623863907
+"CAN",3,"Post_COVID","No_Dummy","CAN","Prices",3.60959696073576
+"CAN",3,"Post_COVID","No_Dummy","CAN","Stock Market",0.191963024482518
+"CAN",3,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",11.718883993267
+"CAN",3,"Post_COVID","With_Dummy","CAN","Housing",0.167755843587226
+"CAN",3,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.824741376987847
+"CAN",3,"Post_COVID","With_Dummy","CAN","Labor Market",3.95121352245986
+"CAN",3,"Post_COVID","With_Dummy","CAN","Money and Credit",1.51038605085935
+"CAN",3,"Post_COVID","With_Dummy","CAN","Output and Income",1.14899723052864
+"CAN",3,"Post_COVID","With_Dummy","CAN","Own Employment Rate",77.0028768846002
+"CAN",3,"Post_COVID","With_Dummy","CAN","Prices",3.49096621101942
+"CAN",3,"Post_COVID","With_Dummy","CAN","Stock Market",0.184178886690447
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",8.68964882231712
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Housing",0.05614349926264
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.482901007766538
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Labor Market",2.05386205235835
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Money and Credit",0.871041266055879
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Output and Income",0.337248923160929
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",86.0873191634524
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Prices",1.34682633740715
+"CAN",3,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0750089282190341
+"CAN",6,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",18.387132610545
+"CAN",6,"Post_COVID","No_Dummy","CAN","Housing",0.282969550277026
+"CAN",6,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",1.74393649349474
+"CAN",6,"Post_COVID","No_Dummy","CAN","Labor Market",6.880838306676
+"CAN",6,"Post_COVID","No_Dummy","CAN","Money and Credit",2.63676960118197
+"CAN",6,"Post_COVID","No_Dummy","CAN","Output and Income",1.94643830043092
+"CAN",6,"Post_COVID","No_Dummy","CAN","Own Employment Rate",59.8316466577671
+"CAN",6,"Post_COVID","No_Dummy","CAN","Prices",8.00946302670305
+"CAN",6,"Post_COVID","No_Dummy","CAN","Stock Market",0.280805452924131
+"CAN",6,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",18.5304739266324
+"CAN",6,"Post_COVID","With_Dummy","CAN","Housing",0.268922222970622
+"CAN",6,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",1.69678793042673
+"CAN",6,"Post_COVID","With_Dummy","CAN","Labor Market",6.93139023870012
+"CAN",6,"Post_COVID","With_Dummy","CAN","Money and Credit",2.52797801509652
+"CAN",6,"Post_COVID","With_Dummy","CAN","Output and Income",1.9083740884209
+"CAN",6,"Post_COVID","With_Dummy","CAN","Own Employment Rate",60.0310659176348
+"CAN",6,"Post_COVID","With_Dummy","CAN","Prices",7.83879377516562
+"CAN",6,"Post_COVID","With_Dummy","CAN","Stock Market",0.266213884952201
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",14.5290624130267
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Housing",0.0834639711931711
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.881480463484165
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Labor Market",5.73790468716932
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Money and Credit",2.27127376096533
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Output and Income",0.590878999616734
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",71.4991985930941
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Prices",4.22587263792463
+"CAN",6,"Pre_COVID","No_Dummy","CAN","Stock Market",0.180864473525853
+"CAN",12,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",15.6014931955737
+"CAN",12,"Post_COVID","No_Dummy","CAN","Housing",0.599460988564099
+"CAN",12,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.878195249915623
+"CAN",12,"Post_COVID","No_Dummy","CAN","Labor Market",7.48900232802139
+"CAN",12,"Post_COVID","No_Dummy","CAN","Money and Credit",2.62382603400884
+"CAN",12,"Post_COVID","No_Dummy","CAN","Output and Income",2.89381889598456
+"CAN",12,"Post_COVID","No_Dummy","CAN","Own Employment Rate",61.2651065713891
+"CAN",12,"Post_COVID","No_Dummy","CAN","Prices",8.25992447526103
+"CAN",12,"Post_COVID","No_Dummy","CAN","Stock Market",0.389172261281642
+"CAN",12,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",15.1275316320228
+"CAN",12,"Post_COVID","With_Dummy","CAN","Housing",0.575479492362704
+"CAN",12,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.896642711442024
+"CAN",12,"Post_COVID","With_Dummy","CAN","Labor Market",7.48334049686644
+"CAN",12,"Post_COVID","With_Dummy","CAN","Money and Credit",2.63265715018089
+"CAN",12,"Post_COVID","With_Dummy","CAN","Output and Income",2.83392680809454
+"CAN",12,"Post_COVID","With_Dummy","CAN","Own Employment Rate",61.8635917171786
+"CAN",12,"Post_COVID","With_Dummy","CAN","Prices",8.22248730394024
+"CAN",12,"Post_COVID","With_Dummy","CAN","Stock Market",0.364342687911733
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",12.9119321257897
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Housing",0.11882331052383
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.528002409173987
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Labor Market",8.44992632376333
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Money and Credit",2.41545201921076
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Output and Income",0.652442292694862
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",70.5173627322924
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Prices",4.2023457475648
+"CAN",12,"Pre_COVID","No_Dummy","CAN","Stock Market",0.203713038986337
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",1.45688015773876
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Housing",0.0225571275427003
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.128916172067731
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Labor Market",0.796289516128478
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Money and Credit",1.62702228697476
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Output and Income",0.273760663851163
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Own Employment Rate",85.8455551879443
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Prices",0.785400759593
+"CAN_US",1,"Post_COVID","No_Dummy","CAN","Stock Market",0.07169580912736
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.709764101663691
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Housing",2.17498784541004
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",0.640448365490867
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Labor Market",1.81197517812499
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Money and Credit",2.26288932219909
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Output and Income",0.500127472589647
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Prices",0.265854114569854
+"CAN_US",1,"Post_COVID","No_Dummy","USA","Stock Market",0.625875918983577
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",1.45704759500967
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Housing",0.020458094467907
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.132728761062822
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Labor Market",0.820859266127798
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Money and Credit",1.63353221047149
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Output and Income",0.288737831072693
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Own Employment Rate",85.8699949783119
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Prices",0.76599250789765
+"CAN_US",1,"Post_COVID","With_Dummy","CAN","Stock Market",0.0715624199793407
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",0.658350725745653
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Housing",2.18179484069882
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",0.64691202744082
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Labor Market",1.84937374252581
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Money and Credit",2.22178949449947
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Output and Income",0.503632260766607
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Prices",0.260045916784329
+"CAN_US",1,"Post_COVID","With_Dummy","USA","Stock Market",0.617187327137223
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",0.277388888205765
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Housing",0.00971104322884599
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.0421035781595188
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Labor Market",0.0580591501340199
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Money and Credit",0.0528013099005041
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Output and Income",0.0528728444216652
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",98.3083401992911
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Prices",0.0817908000367956
+"CAN_US",1,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0134475317477317
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.0279732716933774
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Housing",0.38331076402621
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",0.291466882881096
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Labor Market",0.198634362820915
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Money and Credit",0.0372383068455238
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Output and Income",0.0625181332303601
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Prices",0.0452903289882039
+"CAN_US",1,"Pre_COVID","No_Dummy","USA","Stock Market",0.0570526043884007
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",12.8443522130182
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Housing",0.0675930782022003
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.395798723694328
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Labor Market",4.19884499974475
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Money and Credit",0.706245085792556
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Output and Income",0.408453311558578
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Own Employment Rate",61.2942547960924
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Prices",1.90780164100248
+"CAN_US",3,"Post_COVID","No_Dummy","CAN","Stock Market",0.063127673190948
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",1.29488771216194
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Housing",4.28108842015569
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",2.87671035900418
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Labor Market",2.97656112028487
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Money and Credit",0.543515743654686
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Output and Income",1.54119646612593
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Prices",2.02107019462415
+"CAN_US",3,"Post_COVID","No_Dummy","USA","Stock Market",2.57849846169207
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",12.9026293111907
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Housing",0.0616303485010606
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.416263720427141
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Labor Market",4.16286292917815
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Money and Credit",0.710224502813051
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Output and Income",0.420247637148962
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Own Employment Rate",61.3567193220832
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Prices",1.8996101761717
+"CAN_US",3,"Post_COVID","With_Dummy","CAN","Stock Market",0.0626680526592483
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",1.24884370283746
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Housing",4.38113575449882
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",2.93568260535934
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Labor Market",2.91212327905842
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Money and Credit",0.541191265319655
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Output and Income",1.44515733948322
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Prices",1.90938206030071
+"CAN_US",3,"Post_COVID","With_Dummy","USA","Stock Market",2.63362799296915
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",11.6561532952828
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Housing",0.0249353683362856
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.394863687223835
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Labor Market",2.78375195851656
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Money and Credit",0.505162910040992
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Output and Income",0.13759432425514
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",74.0605999016067
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Prices",1.3566000237071
+"CAN_US",3,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0237650034883085
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.299159312247083
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Housing",2.67601001593861
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",2.21824030480274
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Labor Market",1.39868858757779
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Money and Credit",0.105934678754434
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Output and Income",0.154134990079079
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Prices",0.0985462437939504
+"CAN_US",3,"Pre_COVID","No_Dummy","USA","Stock Market",2.10585939434863
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",16.1771906847823
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Housing",0.09286103617324
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.820392460438621
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Labor Market",6.0146591727834
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Money and Credit",0.915183822566811
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Output and Income",0.57730589666015
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Own Employment Rate",44.7778292174466
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Prices",4.28028870201836
+"CAN_US",6,"Post_COVID","No_Dummy","CAN","Stock Market",0.0596499410275578
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.600232127609053
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Housing",7.32229999531812
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",6.31155578502527
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Labor Market",4.28404043019948
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Money and Credit",0.457877647206158
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Output and Income",0.967532474273212
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Prices",2.65257541252752
+"CAN_US",6,"Post_COVID","No_Dummy","USA","Stock Market",3.68852519394408
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",16.0755313851746
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Housing",0.0846382747080534
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.823863746767562
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Labor Market",5.92378143418179
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Money and Credit",0.915030353663227
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Output and Income",0.578105856570175
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Own Employment Rate",45.3065097741968
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Prices",4.25429375293396
+"CAN_US",6,"Post_COVID","With_Dummy","CAN","Stock Market",0.0563033869252283
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",0.599191925213126
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Housing",7.33262680233803
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",6.2414938436282
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Labor Market",4.19557863581252
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Money and Credit",0.454371520649588
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Output and Income",0.989350673754306
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Prices",2.49505851255937
+"CAN_US",6,"Post_COVID","With_Dummy","USA","Stock Market",3.67427012092352
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",14.3303054913284
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Housing",0.03403730003657
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.769297531322388
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Labor Market",5.79532079257284
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Money and Credit",1.07067592268054
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Output and Income",0.200001913575361
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",58.0642257312393
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Prices",3.67956731704748
+"CAN_US",6,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0365214514052105
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.354653779329684
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Housing",6.81574185484917
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",3.28669141535482
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Labor Market",2.09326156031981
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Money and Credit",0.162849874383706
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Output and Income",0.240734702830053
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Prices",0.160839376615353
+"CAN_US",6,"Pre_COVID","No_Dummy","USA","Stock Market",2.90527398510928
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",15.4267827285684
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Housing",0.36098189897824
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.504311942158014
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Labor Market",8.19115194899396
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Money and Credit",0.858702835055723
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Output and Income",1.40750599251392
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Own Employment Rate",36.68876757408
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Prices",5.58627801291837
+"CAN_US",12,"Post_COVID","No_Dummy","CAN","Stock Market",0.189610231411932
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.394376782057844
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Housing",13.6601660849466
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",6.0289689833785
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Labor Market",3.82379819184227
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Money and Credit",0.362261095649274
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Output and Income",0.885804179153291
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Prices",0.874075271958041
+"CAN_US",12,"Post_COVID","No_Dummy","USA","Stock Market",4.75645624633555
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Consumption, Orders and Inventories",15.2011478504398
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Housing",0.334163026734832
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Interest Rates and Exchange Rates",0.519258201372135
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Labor Market",8.1149171653155
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Money and Credit",0.839080479097122
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Output and Income",1.3151355212807
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Own Employment Rate",37.0843705042125
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Prices",5.65638045264831
+"CAN_US",12,"Post_COVID","With_Dummy","CAN","Stock Market",0.20083680976669
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",0.408422605701551
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Housing",13.7011379796977
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",5.90196503138764
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Labor Market",3.69380916119189
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Money and Credit",0.395216681392809
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Output and Income",0.898023895318371
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Prices",0.853856802731449
+"CAN_US",12,"Post_COVID","With_Dummy","USA","Stock Market",4.88227783171098
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Consumption, Orders and Inventories",12.6413112959136
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Housing",0.0508027777624787
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Interest Rates and Exchange Rates",0.48535449844367
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Labor Market",9.64396254458598
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Money and Credit",1.11670021961047
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Output and Income",0.22439891540776
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",48.5820374300241
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Prices",3.90986883638017
+"CAN_US",12,"Pre_COVID","No_Dummy","CAN","Stock Market",0.0617087958559905
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.216899544589129
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Housing",14.0106039789529
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",3.35267266194416
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Labor Market",2.36801106136255
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Money and Credit",0.231340207540272
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Output and Income",0.310857813790795
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Prices",0.207967207720269
+"CAN_US",12,"Pre_COVID","No_Dummy","USA","Stock Market",2.58550221011561
+"US",1,"Post_COVID","No_Dummy","CAN","Own Employment Rate",85.7398413398426
+"US",1,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",1.09873525801455
+"US",1,"Post_COVID","No_Dummy","USA","Housing",2.61900169154081
+"US",1,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",1.0401402678052
+"US",1,"Post_COVID","No_Dummy","USA","Labor Market",3.33315180914818
+"US",1,"Post_COVID","No_Dummy","USA","Money and Credit",3.82650914032422
+"US",1,"Post_COVID","No_Dummy","USA","Output and Income",1.00431520938909
+"US",1,"Post_COVID","No_Dummy","USA","Prices",0.502128368260291
+"US",1,"Post_COVID","No_Dummy","USA","Stock Market",0.836176915675017
+"US",1,"Post_COVID","With_Dummy","CAN","Own Employment Rate",85.6670223751138
+"US",1,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",1.16994969794939
+"US",1,"Post_COVID","With_Dummy","USA","Housing",2.64260050942656
+"US",1,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",1.02357588115815
+"US",1,"Post_COVID","With_Dummy","USA","Labor Market",3.26751264448329
+"US",1,"Post_COVID","With_Dummy","USA","Money and Credit",3.84978386861124
+"US",1,"Post_COVID","With_Dummy","USA","Output and Income",1.03257956135452
+"US",1,"Post_COVID","With_Dummy","USA","Prices",0.507343035607627
+"US",1,"Post_COVID","With_Dummy","USA","Stock Market",0.839632426295448
+"US",1,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",98.0595970502726
+"US",1,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.0739116428104519
+"US",1,"Pre_COVID","No_Dummy","USA","Housing",0.543195064343653
+"US",1,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",0.45238365502186
+"US",1,"Pre_COVID","No_Dummy","USA","Labor Market",0.473178883648248
+"US",1,"Pre_COVID","No_Dummy","USA","Money and Credit",0.0748160092322943
+"US",1,"Pre_COVID","No_Dummy","USA","Output and Income",0.114827954723328
+"US",1,"Pre_COVID","No_Dummy","USA","Prices",0.0881142382795792
+"US",1,"Pre_COVID","No_Dummy","USA","Stock Market",0.119975501668015
+"US",3,"Post_COVID","No_Dummy","CAN","Own Employment Rate",76.4115447648545
+"US",3,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",1.91014333497754
+"US",3,"Post_COVID","No_Dummy","USA","Housing",4.98929222758721
+"US",3,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",3.54001332071471
+"US",3,"Post_COVID","No_Dummy","USA","Labor Market",5.56890930124997
+"US",3,"Post_COVID","No_Dummy","USA","Money and Credit",0.752642357633329
+"US",3,"Post_COVID","No_Dummy","USA","Output and Income",1.86575734879258
+"US",3,"Post_COVID","No_Dummy","USA","Prices",2.84778482687372
+"US",3,"Post_COVID","No_Dummy","USA","Stock Market",2.11391251731642
+"US",3,"Post_COVID","With_Dummy","CAN","Own Employment Rate",76.7980292900951
+"US",3,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",1.79979747499998
+"US",3,"Post_COVID","With_Dummy","USA","Housing",5.01858687853177
+"US",3,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",3.48657905479023
+"US",3,"Post_COVID","With_Dummy","USA","Labor Market",5.46957215507931
+"US",3,"Post_COVID","With_Dummy","USA","Money and Credit",0.734593731995712
+"US",3,"Post_COVID","With_Dummy","USA","Output and Income",1.8547745676384
+"US",3,"Post_COVID","With_Dummy","USA","Prices",2.71380628386571
+"US",3,"Post_COVID","With_Dummy","USA","Stock Market",2.12426056300375
+"US",3,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",85.3408269512758
+"US",3,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.857480396325814
+"US",3,"Pre_COVID","No_Dummy","USA","Housing",5.09738935776167
+"US",3,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",2.60961304618574
+"US",3,"Pre_COVID","No_Dummy","USA","Labor Market",3.75872432093062
+"US",3,"Pre_COVID","No_Dummy","USA","Money and Credit",0.172581245871623
+"US",3,"Pre_COVID","No_Dummy","USA","Output and Income",0.30332598244187
+"US",3,"Pre_COVID","No_Dummy","USA","Prices",0.177581717581004
+"US",3,"Pre_COVID","No_Dummy","USA","Stock Market",1.68247698162586
+"US",6,"Post_COVID","No_Dummy","CAN","Own Employment Rate",71.0105771275505
+"US",6,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.889603786045379
+"US",6,"Post_COVID","No_Dummy","USA","Housing",6.72600984562775
+"US",6,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",6.99013095310987
+"US",6,"Post_COVID","No_Dummy","USA","Labor Market",5.48192027028639
+"US",6,"Post_COVID","No_Dummy","USA","Money and Credit",0.575309989881555
+"US",6,"Post_COVID","No_Dummy","USA","Output and Income",1.22689872682578
+"US",6,"Post_COVID","No_Dummy","USA","Prices",4.27454564238602
+"US",6,"Post_COVID","No_Dummy","USA","Stock Market",2.82500365828678
+"US",6,"Post_COVID","With_Dummy","CAN","Own Employment Rate",71.3999342710839
+"US",6,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",0.875318577966775
+"US",6,"Post_COVID","With_Dummy","USA","Housing",6.76105756664439
+"US",6,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",6.79532136432263
+"US",6,"Post_COVID","With_Dummy","USA","Labor Market",5.5214728461377
+"US",6,"Post_COVID","With_Dummy","USA","Money and Credit",0.548597154719679
+"US",6,"Post_COVID","With_Dummy","USA","Output and Income",1.2015043540375
+"US",6,"Post_COVID","With_Dummy","USA","Prices",4.06686408236108
+"US",6,"Post_COVID","With_Dummy","USA","Stock Market",2.82992978272635
+"US",6,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",79.9166025422802
+"US",6,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.606233107072837
+"US",6,"Pre_COVID","No_Dummy","USA","Housing",9.41432654156857
+"US",6,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",3.87019537520254
+"US",6,"Pre_COVID","No_Dummy","USA","Labor Market",2.80945032147959
+"US",6,"Pre_COVID","No_Dummy","USA","Money and Credit",0.221620948864181
+"US",6,"Pre_COVID","No_Dummy","USA","Output and Income",0.369240136294796
+"US",6,"Pre_COVID","No_Dummy","USA","Prices",0.262844028160289
+"US",6,"Pre_COVID","No_Dummy","USA","Stock Market",2.529486999077
+"US",12,"Post_COVID","No_Dummy","CAN","Own Employment Rate",52.9773410603289
+"US",12,"Post_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.708652448105098
+"US",12,"Post_COVID","No_Dummy","USA","Housing",22.8713405260755
+"US",12,"Post_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",8.23607513391874
+"US",12,"Post_COVID","No_Dummy","USA","Labor Market",7.30591726685609
+"US",12,"Post_COVID","No_Dummy","USA","Money and Credit",0.638382823738593
+"US",12,"Post_COVID","No_Dummy","USA","Output and Income",1.99976027919154
+"US",12,"Post_COVID","No_Dummy","USA","Prices",1.75839606734252
+"US",12,"Post_COVID","No_Dummy","USA","Stock Market",3.50413439444309
+"US",12,"Post_COVID","With_Dummy","CAN","Own Employment Rate",53.8553852753263
+"US",12,"Post_COVID","With_Dummy","USA","Consumption, Orders and Inventories",0.69492203493729
+"US",12,"Post_COVID","With_Dummy","USA","Housing",23.0738574252563
+"US",12,"Post_COVID","With_Dummy","USA","Interest Rates and Exchange Rates",7.93952563431675
+"US",12,"Post_COVID","With_Dummy","USA","Labor Market",6.78235616925937
+"US",12,"Post_COVID","With_Dummy","USA","Money and Credit",0.659655177280232
+"US",12,"Post_COVID","With_Dummy","USA","Output and Income",1.92259439551646
+"US",12,"Post_COVID","With_Dummy","USA","Prices",1.55556126038152
+"US",12,"Post_COVID","With_Dummy","USA","Stock Market",3.5161426277257
+"US",12,"Pre_COVID","No_Dummy","CAN","Own Employment Rate",59.4378630896725
+"US",12,"Pre_COVID","No_Dummy","USA","Consumption, Orders and Inventories",0.509075896935563
+"US",12,"Pre_COVID","No_Dummy","USA","Housing",25.8253593452236
+"US",12,"Pre_COVID","No_Dummy","USA","Interest Rates and Exchange Rates",5.20442427773017
+"US",12,"Pre_COVID","No_Dummy","USA","Labor Market",4.45433392456931
+"US",12,"Pre_COVID","No_Dummy","USA","Money and Credit",0.490631030215781
+"US",12,"Pre_COVID","No_Dummy","USA","Output and Income",0.695171099505526
+"US",12,"Pre_COVID","No_Dummy","USA","Prices",0.519114078500486
+"US",12,"Pre_COVID","No_Dummy","USA","Stock Market",2.86402725764705
+"CAN",1,"All","No_Dummy","CAN","Consumption, Orders and Inventories",1.5737584094842
+"CAN",1,"All","No_Dummy","CAN","Housing",0.0394094664400002
+"CAN",1,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.194969180128711
+"CAN",1,"All","No_Dummy","CAN","Labor Market",0.811842606558485
+"CAN",1,"All","No_Dummy","CAN","Money and Credit",1.32570117205851
+"CAN",1,"All","No_Dummy","CAN","Output and Income",0.432139121213094
+"CAN",1,"All","No_Dummy","CAN","Own Employment Rate",94.7045241948143
+"CAN",1,"All","No_Dummy","CAN","Prices",0.829847439287177
+"CAN",1,"All","No_Dummy","CAN","Stock Market",0.0878084100155464
+"CAN",1,"All","With_Dummy","CAN","Consumption, Orders and Inventories",2.91620791686703
+"CAN",1,"All","With_Dummy","CAN","Housing",0.0644956459382047
+"CAN",1,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.34520380125219
+"CAN",1,"All","With_Dummy","CAN","Labor Market",1.7518208203212
+"CAN",1,"All","With_Dummy","CAN","Money and Credit",3.07940293233695
+"CAN",1,"All","With_Dummy","CAN","Output and Income",0.915064906469053
+"CAN",1,"All","With_Dummy","CAN","Own Employment Rate",88.9814607629002
+"CAN",1,"All","With_Dummy","CAN","Prices",1.77293263569423
+"CAN",1,"All","With_Dummy","CAN","Stock Market",0.173410578220888
+"CAN",3,"All","No_Dummy","CAN","Consumption, Orders and Inventories",9.86593559992738
+"CAN",3,"All","No_Dummy","CAN","Housing",0.10349748099001
+"CAN",3,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.632593881604132
+"CAN",3,"All","No_Dummy","CAN","Labor Market",2.90465040166585
+"CAN",3,"All","No_Dummy","CAN","Money and Credit",1.11786981252811
+"CAN",3,"All","No_Dummy","CAN","Output and Income",0.675958820036731
+"CAN",3,"All","No_Dummy","CAN","Own Employment Rate",82.3060551538828
+"CAN",3,"All","No_Dummy","CAN","Prices",2.27067943213895
+"CAN",3,"All","No_Dummy","CAN","Stock Market",0.122759417226019
+"CAN",3,"All","With_Dummy","CAN","Consumption, Orders and Inventories",11.718883993267
+"CAN",3,"All","With_Dummy","CAN","Housing",0.167755843587226
+"CAN",3,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.824741376987847
+"CAN",3,"All","With_Dummy","CAN","Labor Market",3.95121352245986
+"CAN",3,"All","With_Dummy","CAN","Money and Credit",1.51038605085935
+"CAN",3,"All","With_Dummy","CAN","Output and Income",1.14899723052864
+"CAN",3,"All","With_Dummy","CAN","Own Employment Rate",77.0028768846002
+"CAN",3,"All","With_Dummy","CAN","Prices",3.49096621101942
+"CAN",3,"All","With_Dummy","CAN","Stock Market",0.184178886690447
+"CAN",6,"All","No_Dummy","CAN","Consumption, Orders and Inventories",16.1042508368656
+"CAN",6,"All","No_Dummy","CAN","Housing",0.164918911765869
+"CAN",6,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",1.23360748165416
+"CAN",6,"All","No_Dummy","CAN","Labor Market",6.20454622412767
+"CAN",6,"All","No_Dummy","CAN","Money and Credit",2.42049987324313
+"CAN",6,"All","No_Dummy","CAN","Output and Income",1.1443322052746
+"CAN",6,"All","No_Dummy","CAN","Own Employment Rate",66.735523542576
+"CAN",6,"All","No_Dummy","CAN","Prices",5.77065214576907
+"CAN",6,"All","No_Dummy","CAN","Stock Market",0.221668778723967
+"CAN",6,"All","With_Dummy","CAN","Consumption, Orders and Inventories",18.5304739266324
+"CAN",6,"All","With_Dummy","CAN","Housing",0.268922222970622
+"CAN",6,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",1.69678793042673
+"CAN",6,"All","With_Dummy","CAN","Labor Market",6.93139023870012
+"CAN",6,"All","With_Dummy","CAN","Money and Credit",2.52797801509652
+"CAN",6,"All","With_Dummy","CAN","Output and Income",1.9083740884209
+"CAN",6,"All","With_Dummy","CAN","Own Employment Rate",60.0310659176348
+"CAN",6,"All","With_Dummy","CAN","Prices",7.83879377516562
+"CAN",6,"All","With_Dummy","CAN","Stock Market",0.266213884952201
+"CAN",12,"All","No_Dummy","CAN","Consumption, Orders and Inventories",14.0100369412637
+"CAN",12,"All","No_Dummy","CAN","Housing",0.315059995640863
+"CAN",12,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.670980551251933
+"CAN",12,"All","No_Dummy","CAN","Labor Market",8.05759640834206
+"CAN",12,"All","No_Dummy","CAN","Money and Credit",2.50052780040051
+"CAN",12,"All","No_Dummy","CAN","Output and Income",1.56756055084273
+"CAN",12,"All","No_Dummy","CAN","Own Employment Rate",66.7398143589058
+"CAN",12,"All","No_Dummy","CAN","Prices",5.85899031686089
+"CAN",12,"All","No_Dummy","CAN","Stock Market",0.279433076491521
+"CAN",12,"All","With_Dummy","CAN","Consumption, Orders and Inventories",15.1275316320228
+"CAN",12,"All","With_Dummy","CAN","Housing",0.575479492362704
+"CAN",12,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.896642711442024
+"CAN",12,"All","With_Dummy","CAN","Labor Market",7.48334049686644
+"CAN",12,"All","With_Dummy","CAN","Money and Credit",2.63265715018089
+"CAN",12,"All","With_Dummy","CAN","Output and Income",2.83392680809454
+"CAN",12,"All","With_Dummy","CAN","Own Employment Rate",61.8635917171786
+"CAN",12,"All","With_Dummy","CAN","Prices",8.22248730394024
+"CAN",12,"All","With_Dummy","CAN","Stock Market",0.364342687911733
+"CAN_US",1,"All","No_Dummy","CAN","Consumption, Orders and Inventories",0.758956329612729
+"CAN_US",1,"All","No_Dummy","CAN","Housing",0.014955894220893
+"CAN_US",1,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.0775477733054754
+"CAN_US",1,"All","No_Dummy","CAN","Labor Market",0.359466814356609
+"CAN_US",1,"All","No_Dummy","CAN","Money and Credit",0.695530584563958
+"CAN_US",1,"All","No_Dummy","CAN","Output and Income",0.143057812117732
+"CAN_US",1,"All","No_Dummy","CAN","Own Employment Rate",93.2199841887412
+"CAN_US",1,"All","No_Dummy","CAN","Prices",0.369063505417731
+"CAN_US",1,"All","No_Dummy","CAN","Stock Market",0.0372293728080533
+"CAN_US",1,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.306337575054038
+"CAN_US",1,"All","No_Dummy","USA","Housing",1.11482389192848
+"CAN_US",1,"All","No_Dummy","USA","Interest Rates and Exchange Rates",0.43395044678686
+"CAN_US",1,"All","No_Dummy","USA","Labor Market",0.857335642442105
+"CAN_US",1,"All","No_Dummy","USA","Money and Credit",0.94593605867627
+"CAN_US",1,"All","No_Dummy","USA","Output and Income",0.241187035098945
+"CAN_US",1,"All","No_Dummy","USA","Prices",0.135342998841067
+"CAN_US",1,"All","No_Dummy","USA","Stock Market",0.289294076027851
+"CAN_US",1,"All","With_Dummy","CAN","Consumption, Orders and Inventories",1.45704759500967
+"CAN_US",1,"All","With_Dummy","CAN","Housing",0.020458094467907
+"CAN_US",1,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.132728761062822
+"CAN_US",1,"All","With_Dummy","CAN","Labor Market",0.820859266127798
+"CAN_US",1,"All","With_Dummy","CAN","Money and Credit",1.63353221047149
+"CAN_US",1,"All","With_Dummy","CAN","Output and Income",0.288737831072693
+"CAN_US",1,"All","With_Dummy","CAN","Own Employment Rate",85.8699949783119
+"CAN_US",1,"All","With_Dummy","CAN","Prices",0.76599250789765
+"CAN_US",1,"All","With_Dummy","CAN","Stock Market",0.0715624199793407
+"CAN_US",1,"All","With_Dummy","USA","Consumption, Orders and Inventories",0.658350725745653
+"CAN_US",1,"All","With_Dummy","USA","Housing",2.18179484069882
+"CAN_US",1,"All","With_Dummy","USA","Interest Rates and Exchange Rates",0.64691202744082
+"CAN_US",1,"All","With_Dummy","USA","Labor Market",1.84937374252581
+"CAN_US",1,"All","With_Dummy","USA","Money and Credit",2.22178949449947
+"CAN_US",1,"All","With_Dummy","USA","Output and Income",0.503632260766607
+"CAN_US",1,"All","With_Dummy","USA","Prices",0.260045916784329
+"CAN_US",1,"All","With_Dummy","USA","Stock Market",0.617187327137223
+"CAN_US",3,"All","No_Dummy","CAN","Consumption, Orders and Inventories",12.1412759303345
+"CAN_US",3,"All","No_Dummy","CAN","Housing",0.0423518297608306
+"CAN_US",3,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.395245447676285
+"CAN_US",3,"All","No_Dummy","CAN","Labor Market",3.3615118392547
+"CAN_US",3,"All","No_Dummy","CAN","Money and Credit",0.587261549844885
+"CAN_US",3,"All","No_Dummy","CAN","Output and Income",0.2481817214382
+"CAN_US",3,"All","No_Dummy","CAN","Own Employment Rate",68.8483051543849
+"CAN_US",3,"All","No_Dummy","CAN","Prices",1.58164683786912
+"CAN_US",3,"All","No_Dummy","CAN","Stock Market",0.0398361526568418
+"CAN_US",3,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.705699309845456
+"CAN_US",3,"All","No_Dummy","USA","Housing",3.331337885116
+"CAN_US",3,"All","No_Dummy","USA","Interest Rates and Exchange Rates",2.48708310799741
+"CAN_US",3,"All","No_Dummy","USA","Labor Market",2.04290873406766
+"CAN_US",3,"All","No_Dummy","USA","Money and Credit",0.284592036613117
+"CAN_US",3,"All","No_Dummy","USA","Output and Income",0.72045003059525
+"CAN_US",3,"All","No_Dummy","USA","Prices",0.883482058038233
+"CAN_US",3,"All","No_Dummy","USA","Stock Market",2.29883037450661
+"CAN_US",3,"All","With_Dummy","CAN","Consumption, Orders and Inventories",12.9026293111907
+"CAN_US",3,"All","With_Dummy","CAN","Housing",0.0616303485010606
+"CAN_US",3,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.416263720427141
+"CAN_US",3,"All","With_Dummy","CAN","Labor Market",4.16286292917815
+"CAN_US",3,"All","With_Dummy","CAN","Money and Credit",0.710224502813051
+"CAN_US",3,"All","With_Dummy","CAN","Output and Income",0.420247637148962
+"CAN_US",3,"All","With_Dummy","CAN","Own Employment Rate",61.3567193220832
+"CAN_US",3,"All","With_Dummy","CAN","Prices",1.8996101761717
+"CAN_US",3,"All","With_Dummy","CAN","Stock Market",0.0626680526592483
+"CAN_US",3,"All","With_Dummy","USA","Consumption, Orders and Inventories",1.24884370283746
+"CAN_US",3,"All","With_Dummy","USA","Housing",4.38113575449882
+"CAN_US",3,"All","With_Dummy","USA","Interest Rates and Exchange Rates",2.93568260535934
+"CAN_US",3,"All","With_Dummy","USA","Labor Market",2.91212327905842
+"CAN_US",3,"All","With_Dummy","USA","Money and Credit",0.541191265319655
+"CAN_US",3,"All","With_Dummy","USA","Output and Income",1.44515733948322
+"CAN_US",3,"All","With_Dummy","USA","Prices",1.90938206030071
+"CAN_US",3,"All","With_Dummy","USA","Stock Market",2.63362799296915
+"CAN_US",6,"All","No_Dummy","CAN","Consumption, Orders and Inventories",15.0843592093658
+"CAN_US",6,"All","No_Dummy","CAN","Housing",0.058054091713672
+"CAN_US",6,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.790158774571028
+"CAN_US",6,"All","No_Dummy","CAN","Labor Market",5.88487314899017
+"CAN_US",6,"All","No_Dummy","CAN","Money and Credit",1.00719098239742
+"CAN_US",6,"All","No_Dummy","CAN","Output and Income",0.354049101935423
+"CAN_US",6,"All","No_Dummy","CAN","Own Employment Rate",52.639602302531
+"CAN_US",6,"All","No_Dummy","CAN","Prices",3.92483226120719
+"CAN_US",6,"All","No_Dummy","CAN","Stock Market",0.0459644442096008
+"CAN_US",6,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.454919495491083
+"CAN_US",6,"All","No_Dummy","USA","Housing",7.02256145066193
+"CAN_US",6,"All","No_Dummy","USA","Interest Rates and Exchange Rates",4.52169521125577
+"CAN_US",6,"All","No_Dummy","USA","Labor Market",2.98772157228252
+"CAN_US",6,"All","No_Dummy","USA","Money and Credit",0.283305000565654
+"CAN_US",6,"All","No_Dummy","USA","Output and Income",0.537474621348266
+"CAN_US",6,"All","No_Dummy","USA","Prices",1.17817539127772
+"CAN_US",6,"All","No_Dummy","USA","Stock Market",3.22506294019568
+"CAN_US",6,"All","With_Dummy","CAN","Consumption, Orders and Inventories",16.0755313851746
+"CAN_US",6,"All","With_Dummy","CAN","Housing",0.0846382747080534
+"CAN_US",6,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.823863746767562
+"CAN_US",6,"All","With_Dummy","CAN","Labor Market",5.92378143418179
+"CAN_US",6,"All","With_Dummy","CAN","Money and Credit",0.915030353663227
+"CAN_US",6,"All","With_Dummy","CAN","Output and Income",0.578105856570175
+"CAN_US",6,"All","With_Dummy","CAN","Own Employment Rate",45.3065097741968
+"CAN_US",6,"All","With_Dummy","CAN","Prices",4.25429375293396
+"CAN_US",6,"All","With_Dummy","CAN","Stock Market",0.0563033869252283
+"CAN_US",6,"All","With_Dummy","USA","Consumption, Orders and Inventories",0.599191925213126
+"CAN_US",6,"All","With_Dummy","USA","Housing",7.33262680233803
+"CAN_US",6,"All","With_Dummy","USA","Interest Rates and Exchange Rates",6.2414938436282
+"CAN_US",6,"All","With_Dummy","USA","Labor Market",4.19557863581252
+"CAN_US",6,"All","With_Dummy","USA","Money and Credit",0.454371520649588
+"CAN_US",6,"All","With_Dummy","USA","Output and Income",0.989350673754306
+"CAN_US",6,"All","With_Dummy","USA","Prices",2.49505851255937
+"CAN_US",6,"All","With_Dummy","USA","Stock Market",3.67427012092352
+"CAN_US",12,"All","No_Dummy","CAN","Consumption, Orders and Inventories",13.778574780252
+"CAN_US",12,"All","No_Dummy","CAN","Housing",0.177443957430452
+"CAN_US",12,"All","No_Dummy","CAN","Interest Rates and Exchange Rates",0.493094519841834
+"CAN_US",12,"All","No_Dummy","CAN","Labor Market",9.05080318898924
+"CAN_US",12,"All","No_Dummy","CAN","Money and Credit",1.01136400934847
+"CAN_US",12,"All","No_Dummy","CAN","Output and Income",0.707442633279504
+"CAN_US",12,"All","No_Dummy","CAN","Own Employment Rate",43.7262053586623
+"CAN_US",12,"All","No_Dummy","CAN","Prices",4.59431992029222
+"CAN_US",12,"All","No_Dummy","CAN","Stock Market",0.113928908597765
+"CAN_US",12,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.28936066521245
+"CAN_US",12,"All","No_Dummy","USA","Housing",13.8675257855421
+"CAN_US",12,"All","No_Dummy","USA","Interest Rates and Exchange Rates",4.44536169258895
+"CAN_US",12,"All","No_Dummy","USA","Labor Market",2.96238568859983
+"CAN_US",12,"All","No_Dummy","USA","Money and Credit",0.284793114519687
+"CAN_US",12,"All","No_Dummy","USA","Output and Income",0.545599229234654
+"CAN_US",12,"All","No_Dummy","USA","Prices",0.479928488385395
+"CAN_US",12,"All","No_Dummy","USA","Stock Market",3.47186805922316
+"CAN_US",12,"All","With_Dummy","CAN","Consumption, Orders and Inventories",15.2011478504398
+"CAN_US",12,"All","With_Dummy","CAN","Housing",0.334163026734832
+"CAN_US",12,"All","With_Dummy","CAN","Interest Rates and Exchange Rates",0.519258201372135
+"CAN_US",12,"All","With_Dummy","CAN","Labor Market",8.1149171653155
+"CAN_US",12,"All","With_Dummy","CAN","Money and Credit",0.839080479097122
+"CAN_US",12,"All","With_Dummy","CAN","Output and Income",1.3151355212807
+"CAN_US",12,"All","With_Dummy","CAN","Own Employment Rate",37.0843705042125
+"CAN_US",12,"All","With_Dummy","CAN","Prices",5.65638045264831
+"CAN_US",12,"All","With_Dummy","CAN","Stock Market",0.20083680976669
+"CAN_US",12,"All","With_Dummy","USA","Consumption, Orders and Inventories",0.408422605701551
+"CAN_US",12,"All","With_Dummy","USA","Housing",13.7011379796977
+"CAN_US",12,"All","With_Dummy","USA","Interest Rates and Exchange Rates",5.90196503138764
+"CAN_US",12,"All","With_Dummy","USA","Labor Market",3.69380916119189
+"CAN_US",12,"All","With_Dummy","USA","Money and Credit",0.395216681392809
+"CAN_US",12,"All","With_Dummy","USA","Output and Income",0.898023895318371
+"CAN_US",12,"All","With_Dummy","USA","Prices",0.853856802731449
+"CAN_US",12,"All","With_Dummy","USA","Stock Market",4.88227783171098
+"US",1,"All","No_Dummy","CAN","Own Employment Rate",93.0296376182036
+"US",1,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.492330751976623
+"US",1,"All","No_Dummy","USA","Housing",1.39071374645373
+"US",1,"All","No_Dummy","USA","Interest Rates and Exchange Rates",0.692355289826891
+"US",1,"All","No_Dummy","USA","Labor Market",1.64086013725473
+"US",1,"All","No_Dummy","USA","Money and Credit",1.6065723763645
+"US",1,"All","No_Dummy","USA","Output and Income",0.477991390060236
+"US",1,"All","No_Dummy","USA","Prices",0.257149593123775
+"US",1,"All","No_Dummy","USA","Stock Market",0.412389096735963
+"US",1,"All","With_Dummy","CAN","Own Employment Rate",85.6670223751138
+"US",1,"All","With_Dummy","USA","Consumption, Orders and Inventories",1.16994969794939
+"US",1,"All","With_Dummy","USA","Housing",2.64260050942656
+"US",1,"All","With_Dummy","USA","Interest Rates and Exchange Rates",1.02357588115815
+"US",1,"All","With_Dummy","USA","Labor Market",3.26751264448329
+"US",1,"All","With_Dummy","USA","Money and Credit",3.84978386861124
+"US",1,"All","With_Dummy","USA","Output and Income",1.03257956135452
+"US",1,"All","With_Dummy","USA","Prices",0.507343035607627
+"US",1,"All","With_Dummy","USA","Stock Market",0.839632426295448
+"US",3,"All","No_Dummy","CAN","Own Employment Rate",81.695143691731
+"US",3,"All","No_Dummy","USA","Consumption, Orders and Inventories",1.28726585648539
+"US",3,"All","No_Dummy","USA","Housing",5.05325502650701
+"US",3,"All","No_Dummy","USA","Interest Rates and Exchange Rates",2.98948061389283
+"US",3,"All","No_Dummy","USA","Labor Market",4.49779392827994
+"US",3,"All","No_Dummy","USA","Money and Credit",0.409410930555397
+"US",3,"All","No_Dummy","USA","Output and Income",0.941241747401628
+"US",3,"All","No_Dummy","USA","Prices",1.26778298705554
+"US",3,"All","No_Dummy","USA","Stock Market",1.85862521809124
+"US",3,"All","With_Dummy","CAN","Own Employment Rate",76.7980292900951
+"US",3,"All","With_Dummy","USA","Consumption, Orders and Inventories",1.79979747499998
+"US",3,"All","With_Dummy","USA","Housing",5.01858687853177
+"US",3,"All","With_Dummy","USA","Interest Rates and Exchange Rates",3.48657905479023
+"US",3,"All","With_Dummy","USA","Labor Market",5.46957215507931
+"US",3,"All","With_Dummy","USA","Money and Credit",0.734593731995712
+"US",3,"All","With_Dummy","USA","Output and Income",1.8547745676384
+"US",3,"All","With_Dummy","USA","Prices",2.71380628386571
+"US",3,"All","With_Dummy","USA","Stock Market",2.12426056300375
+"US",6,"All","No_Dummy","CAN","Own Employment Rate",76.2804146510592
+"US",6,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.72192882807346
+"US",6,"All","No_Dummy","USA","Housing",8.31672978405427
+"US",6,"All","No_Dummy","USA","Interest Rates and Exchange Rates",5.14401522653749
+"US",6,"All","No_Dummy","USA","Labor Market",3.90057710531195
+"US",6,"All","No_Dummy","USA","Money and Credit",0.366026533658257
+"US",6,"All","No_Dummy","USA","Output and Income",0.71940843657076
+"US",6,"All","No_Dummy","USA","Prices",1.90075770497434
+"US",6,"All","No_Dummy","USA","Stock Market",2.65014172976028
+"US",6,"All","With_Dummy","CAN","Own Employment Rate",71.3999342710839
+"US",6,"All","With_Dummy","USA","Consumption, Orders and Inventories",0.875318577966775
+"US",6,"All","With_Dummy","USA","Housing",6.76105756664439
+"US",6,"All","With_Dummy","USA","Interest Rates and Exchange Rates",6.79532136432263
+"US",6,"All","With_Dummy","USA","Labor Market",5.5214728461377
+"US",6,"All","With_Dummy","USA","Money and Credit",0.548597154719679
+"US",6,"All","With_Dummy","USA","Output and Income",1.2015043540375
+"US",6,"All","With_Dummy","USA","Prices",4.06686408236108
+"US",6,"All","With_Dummy","USA","Stock Market",2.82992978272635
+"US",12,"All","No_Dummy","CAN","Own Employment Rate",56.8001351605322
+"US",12,"All","No_Dummy","USA","Consumption, Orders and Inventories",0.590559814276971
+"US",12,"All","No_Dummy","USA","Housing",24.6192806557489
+"US",12,"All","No_Dummy","USA","Interest Rates and Exchange Rates",6.44219888765331
+"US",12,"All","No_Dummy","USA","Labor Market",5.61858984538462
+"US",12,"All","No_Dummy","USA","Money and Credit",0.550955726979533
+"US",12,"All","No_Dummy","USA","Output and Income",1.2278140190223
+"US",12,"All","No_Dummy","USA","Prices",1.02509311536499
+"US",12,"All","No_Dummy","USA","Stock Market",3.12537277503715
+"US",12,"All","With_Dummy","CAN","Own Employment Rate",53.8553852753263
+"US",12,"All","With_Dummy","USA","Consumption, Orders and Inventories",0.69492203493729
+"US",12,"All","With_Dummy","USA","Housing",23.0738574252563
+"US",12,"All","With_Dummy","USA","Interest Rates and Exchange Rates",7.93952563431675
+"US",12,"All","With_Dummy","USA","Labor Market",6.78235616925937
+"US",12,"All","With_Dummy","USA","Money and Credit",0.659655177280232
+"US",12,"All","With_Dummy","USA","Output and Income",1.92259439551646
+"US",12,"All","With_Dummy","USA","Prices",1.55556126038152
+"US",12,"All","With_Dummy","USA","Stock Market",3.5161426277257

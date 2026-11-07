@@ -683,3 +683,287 @@ for (set_name in predictor_sets) {
     }
   }
 }
+
+
+# ============================================================
+# Variable Importance: Default Random Forest
+# ============================================================
+
+metadata_file <- "data/master_metadata.xlsx"
+
+importance_rds <- "results/random_forest_default/level_RF_full_results.rds"
+
+importance_out <- "results/random_forest_default/variable_importance"
+
+# Check input files
+stopifnot(
+  file.exists(metadata_file),
+  file.exists(importance_rds)
+)
+
+# Create output directory
+dir.create(
+  importance_out,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+# Load default RF results
+rf_saved <- readRDS(importance_rds)
+
+cat("Analyzing:", importance_rds, "\n")
+cat("Saving results to:", importance_out, "\n")
+cat("Number of RF batches:", length(rf_saved), "\n")
+
+md <- as.data.frame(readxl::read_excel(metadata_file, sheet = 'master'))
+stopifnot(all(c('country', 'variable', 'group name') %in% names(md)))
+md <- md %>%
+  transmute(Country = toupper(trimws(as.character(country))),
+            Variable = trimws(as.character(variable)),
+            Group = trimws(as.character(`group name`))) %>%
+  filter(!is.na(Variable), nzchar(Variable), !is.na(Group), nzchar(Group)) %>%
+  distinct(Country, Variable, .keep_all = TRUE)
+if (anyDuplicated(paste(md$Country, md$Variable))) stop('Metadata country/variable keys are duplicated.')
+
+# Each entry in save.importance corresponds to one chronological rolling window.
+extract_importance <- function(key, result) {
+  parts <- strsplit(key, '_', fixed = TRUE)[[1]]
+  # Keys look like CAN_US_12_Post_COVID_With_Dummy.
+  set_name <- if (startsWith(key, 'CAN_US_')) 'CAN_US' else if (startsWith(key, 'CAN_')) 'CAN' else 'US'
+  remainder <- substring(key, nchar(set_name) + 2L)
+  h <- as.integer(sub('_.*$', '', remainder))
+  period <- if (grepl('_Pre_COVID_', key, fixed = TRUE)) 'Pre_COVID' else 'Post_COVID'
+  spec <- if (endsWith(key, '_With_Dummy')) 'With_Dummy' else 'No_Dummy'
+  imp <- result$save.importance
+  if (is.null(imp) || !length(imp)) stop('Missing importance for ', key)
+  dates <- result$forecasts$Outcome_Date
+  if (length(imp) != length(dates)) stop('Importance/date length mismatch: ', key)
+  dplyr::bind_rows(lapply(seq_along(imp), function(i) {
+    a <- imp[[i]]
+    if (is.null(dim(a)) || is.null(rownames(a)) || !'IncNodePurity' %in% colnames(a))
+      stop('IncNodePurity missing in ', key, ' window ', i)
+    data.frame(Predictor_Set = set_name, Horizon = h, Period = period,
+               Specification = spec, Window = i, Outcome_Date = as.Date(dates[i]),
+               Feature = rownames(a), Importance = as.numeric(a[, 'IncNodePurity']))
+  }))
+}
+raw_imp <- dplyr::bind_rows(Map(extract_importance, names(rf_saved), rf_saved))
+if (!nrow(raw_imp)) stop('No importance rows found.')
+
+# Strip lag suffix, then classify country. US_ only occurs in CAN_US.
+# COVID controls have their own group; employment rate and its change are separate.
+feature_map <- raw_imp %>% distinct(Predictor_Set, Feature) %>%
+  mutate(Variable_With_Prefix = sub('_lag[0-9]+$', '', Feature),
+         Is_US_Prefixed = Predictor_Set == 'CAN_US' & startsWith(Variable_With_Prefix, 'US_'),
+         Country = if_else(Predictor_Set == 'US' | Is_US_Prefixed, 'USA', 'CAN'),
+         Variable = if_else(Is_US_Prefixed, sub('^US_', '', Variable_With_Prefix), Variable_With_Prefix),
+         Special_Group = case_when(
+           Variable %in% c('Employ_Rate', 'Employ_Rate_diff_lag1') ~ 'Own Employment Rate',
+           Variable %in% c('COVID_Shock_Control', 'COVID_Recovery_Control') ~ 'COVID Controls',
+           TRUE ~ NA_character_)) %>%
+  mutate(Variable = case_when(
+    Variable == 'IPB51222S' ~ 'IPB51222s',
+    Variable == 'S.P.500' ~ 'S&P 500',
+    Variable == 'S.P.div.yield' ~ 'S&P div yield',
+    Variable == 'S.P.PE.ratio' ~ 'S&P PE ratio',
+    TRUE ~ Variable)) %>%
+  left_join(md, by = c('Country', 'Variable')) %>%
+  mutate(Group = coalesce(Special_Group, Group),
+         Group = if_else(is.na(Group), 'UNMAPPED', Group),
+         Country_Group = if_else(Special_Group == 'Own Employment Rate', 'CAN', Country, missing = Country))
+
+unmapped <- feature_map %>% filter(Group == 'UNMAPPED', !grepl('^COVID_(Shock|Recovery)', Variable))
+write.csv(unmapped, file.path(importance_out, 'unmapped_features.csv'), row.names = FALSE)
+if (nrow(unmapped)) {
+  warning(nrow(unmapped), ' unmatched feature names. See unmapped_features.csv; unmapped importance remains in totals.')
+}
+write.csv(feature_map, file.path(importance_out, 'feature_category_mapping.csv'), row.names = FALSE)
+
+imp <- raw_imp %>%
+  left_join(feature_map, by = c('Predictor_Set', 'Feature')) %>%
+  filter(!grepl('^COVID_(Shock|Recovery)', Variable))
+window_keys <- c('Predictor_Set', 'Horizon', 'Period', 'Specification', 'Window', 'Outcome_Date')
+# First normalize within each forest, THEN average window percentages.
+imp <- imp %>%
+  group_by(across(all_of(window_keys))) %>%
+  mutate(Relative_Importance = if (sum(Importance) > 0) {
+    100 * Importance / sum(Importance)
+  } else {
+    rep(NA_real_, n())
+  }) %>%
+  ungroup()
+if (anyNA(imp$Relative_Importance)) stop('One or more forests have zero total IncNodePurity.')
+
+# Sum all lags and predictors within a group for each forest.
+group_window <- imp %>% group_by(across(all_of(window_keys)), Country_Group, Group) %>%
+  summarise(Relative_Importance = sum(Relative_Importance), .groups = 'drop')
+# Missing groups in a window are zero; include them in period means.
+all_windows <- imp %>% distinct(across(all_of(window_keys)))
+all_groups <- group_window %>% distinct(Predictor_Set, Horizon, Period, Specification, Country_Group, Group)
+group_window <- all_windows %>%
+  left_join(
+    all_groups,
+    by = c("Predictor_Set", "Horizon", "Period", "Specification"),
+    relationship = "many-to-many"
+  ) %>%
+  left_join(
+    group_window,
+    by = c(window_keys, "Country_Group", "Group"),
+    relationship = "many-to-one"
+  ) %>%
+  mutate(
+    Relative_Importance = replace_na(Relative_Importance, 0)
+  )
+
+group_summary <- group_window %>%
+  group_by(Predictor_Set, Horizon, Period, Specification, Country_Group, Group) %>%
+  summarise(Mean_Percent = mean(Relative_Importance), .groups = 'drop')
+
+# All-period summary is weighted by the number of rolling windows.
+group_all <- group_window %>% group_by(Predictor_Set, Horizon, Specification, Country_Group, Group) %>%
+  summarise(Period = 'All', Mean_Percent = mean(Relative_Importance), .groups = 'drop')
+group_summary <- bind_rows(group_summary, group_all)
+write.csv(group_summary, file.path(importance_out, 'group_relative_importance.csv'), row.names = FALSE)
+write.csv(group_window, file.path(importance_out, 'group_importance_by_window.csv'), row.names = FALSE)
+
+# Top predictors: aggregate all four lags, with separate CAN/USA identities.
+indicator_window <- imp %>% group_by(across(all_of(window_keys)), Country_Group, Variable) %>%
+  summarise(Relative_Importance = sum(Relative_Importance), .groups = 'drop')
+# Correct for indicators absent from some forests (e.g., inactive COVID controls).
+window_counts <- all_windows %>% count(Predictor_Set, Horizon, Period, Specification, name = 'N_Windows')
+indicator_summary <- indicator_window %>% group_by(Predictor_Set, Horizon, Period, Specification, Country_Group, Variable) %>%
+  summarise(Total_Percent = sum(Relative_Importance), .groups = 'drop') %>%
+  left_join(window_counts, by = c('Predictor_Set','Horizon','Period','Specification')) %>%
+  mutate(Mean_Percent = Total_Percent / N_Windows) %>% select(-Total_Percent, -N_Windows)
+indicator_all <- indicator_window %>% group_by(Predictor_Set, Horizon, Specification, Country_Group, Variable) %>%
+  summarise(Total_Percent = sum(Relative_Importance), .groups = 'drop') %>%
+  left_join(all_windows %>% count(Predictor_Set, Horizon, Specification, name = 'N_Windows'),
+            by = c('Predictor_Set', 'Horizon', 'Specification')) %>%
+  mutate(Period = 'All', Mean_Percent = Total_Percent / N_Windows) %>%
+  select(-Total_Percent, -N_Windows)
+indicator_summary <- bind_rows(indicator_summary, indicator_all)
+write.csv(indicator_summary, file.path(importance_out, 'indicator_relative_importance.csv'), row.names = FALSE)
+
+# Canadian vs US shares; keep Own Employment Rate as Canadian.
+country_window <- imp %>% group_by(across(all_of(window_keys)), Country_Group) %>%
+  summarise(Relative_Importance = sum(Relative_Importance), .groups = 'drop')
+country_summary <- country_window %>% group_by(Predictor_Set, Horizon, Period, Specification, Country_Group) %>%
+  summarise(Mean_Percent = mean(Relative_Importance), .groups = 'drop')
+country_summary <- bind_rows(country_summary, country_window %>%
+                               group_by(Predictor_Set, Horizon, Specification, Country_Group) %>%
+                               summarise(Period = 'All', Mean_Percent = mean(Relative_Importance), .groups = 'drop'))
+write.csv(country_summary, file.path(importance_out, 'country_importance_shares.csv'), row.names = FALSE)
+
+plot_periods <- c('Pre_COVID', 'Post_COVID')
+
+for (set_name in unique(group_summary$Predictor_Set)) {
+  for (period in c("Pre_COVID", "Post_COVID")) {
+    for (spec in c("No_Dummy", "With_Dummy")) {
+      
+      # Pre-COVID dummy specification is identical to no-dummy
+      if (period == "Pre_COVID" && spec == "With_Dummy") next
+      
+      plot_data <- group_summary %>%
+        filter(
+          Predictor_Set == set_name,
+          Period == period,
+          Specification == spec
+        ) %>%
+        mutate(
+          Horizon_Label = factor(
+            paste0(Horizon, " Month"),
+            levels = paste0(c(1, 3, 6, 12), " Month")
+          ),
+          Row = if (set_name == "CAN_US") {
+            paste(Country_Group, Group, sep = " | ")
+          } else {
+            Group
+          }
+        )
+      
+      if (nrow(plot_data) == 0) next
+      
+      fig <- ggplot(
+        plot_data,
+        aes(x = Horizon_Label, y = Row, fill = Mean_Percent)
+      ) +
+        geom_tile(color = "white", linewidth = 0.6) +
+        geom_text(
+          aes(label = sprintf("%.1f%%", Mean_Percent)),
+          size = 3
+        ) +
+        scale_fill_gradient(
+          low = "#EFF6FF",
+          high = "#1E3A8A"
+        ) +
+        labs(
+          title = paste(
+            "RF Relative Importance by Group:", set_name
+          ),
+          subtitle = paste(
+            period, "|", spec,
+            "| Mean share of IncNodePurity across rolling forests"
+          ),
+          x = "Forecast Horizon",
+          y = NULL,
+          fill = "Importance (%)"
+        ) +
+        theme_minimal(base_size = 11) +
+        theme(
+          panel.grid = element_blank(),
+          axis.text.y = element_text(size = 10),
+          axis.text.x = element_text(face = "bold"),
+          plot.title = element_text(face = "bold")
+        )
+      
+      ggsave(
+        filename = file.path(
+          importance_out,
+          paste0(
+            "heatmap_", set_name, "_",
+            period, "_", spec, ".png"
+          )
+        ),
+        plot = fig,
+        width = 11,
+        height = max(
+          5,
+          0.38 * n_distinct(plot_data$Row) + 2
+        ),
+        dpi = 300
+      )
+      
+    }
+  }
+}
+
+# Top-20 plots per predictor set, horizon and evaluation period.
+for (set_name in c('CAN', 'US', 'CAN_US')) for (h in c(1,3,6,12)) for (period in plot_periods) {
+  spec <- if (period == 'Pre_COVID') 'No_Dummy' else 'With_Dummy'
+  dat <- indicator_summary %>% filter(Predictor_Set == set_name, Horizon == h, Period == period,
+                                      Specification == spec) %>%
+    mutate(Label = paste(Country_Group, Variable, sep = ' | ')) %>%
+    slice_max(Mean_Percent, n = 20, with_ties = FALSE) %>%
+    arrange(Mean_Percent) %>% mutate(Label = factor(Label, levels = Label))
+  fig <- ggplot(dat, aes(Mean_Percent, Label)) + geom_col(fill = '#2563EB') +
+    labs(title = paste('Top 20 RF indicators:', set_name, '| h=', h),
+         subtitle = paste(period, '|', spec), x = 'Mean relative importance (%)', y = NULL) +
+    theme_minimal(base_size = 11)
+  ggsave(file.path(importance_out, paste0('top20_', set_name, '_h', h, '_', period, '.png')),
+         fig, width = 10, height = 7, dpi = 300)
+}
+
+# Canadian vs US relative-importance shares, for CAN+US only.
+country_plot <- country_summary %>% filter(Predictor_Set == 'CAN_US', Period %in% plot_periods,
+                                           (Period == 'Pre_COVID' & Specification == 'No_Dummy') |
+                                             (Period == 'Post_COVID' & Specification == 'With_Dummy')) %>%
+  mutate(Horizon_Label = factor(paste0('h=', Horizon), levels = paste0('h=', c(1,3,6,12))))
+fig <- ggplot(country_plot, aes(Horizon_Label, Mean_Percent, fill = Country_Group)) +
+  geom_col(position = 'stack') + facet_wrap(~Period) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = 'CAN+US: country shares of RF importance', x = 'Forecast horizon',
+       y = 'Share of IncNodePurity (%)', fill = 'Country') + theme_minimal(base_size = 12)
+ggsave(file.path(importance_out, 'CAN_US_country_shares.png'), fig,
+       width = 10, height = 5.5, dpi = 300)
+cat('Variable importance exports saved to:', importance_out, '\n')
+
