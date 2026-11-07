@@ -1,6 +1,6 @@
 # Ridge regression on raw lagged predictors; lambda re-picked by information criterion in every window
 library(glmnet)
-library(HDeconometrics)     # ic.glmnet; install with remotes::install_github("gabrielrvsc/HDeconometrics")
+library(HDeconometrics)
 source("functions/data_prep.R")
 panels <- load_panels()
 
@@ -102,6 +102,6 @@ choices <- do.call(rbind, choices)
 rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Period + Specification,
                   data = preds, FUN = function(e) sqrt(mean(e^2)))
 
-write.csv(preds,   file.path(out_dir, "Ridge_predictions.csv"), row.names = FALSE)
-write.csv(rmse,    file.path(out_dir, "Ridge_RMSE_summary.csv"), row.names = FALSE)
-write.csv(choices, file.path(out_dir, "Ridge_lambda_choice.csv"), row.names = FALSE)  # chosen lambda per window
+write.csv(preds,   file.path(out_dir, "level_Ridge_predictions.csv"), row.names = FALSE)
+write.csv(rmse,    file.path(out_dir, "level_Ridge_RMSE_summary.csv"), row.names = FALSE)
+write.csv(choices, file.path(out_dir, "level_Ridge_lambda_choice.csv"), row.names = FALSE)  # chosen lambda per window
