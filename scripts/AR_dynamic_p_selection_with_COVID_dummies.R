@@ -286,11 +286,11 @@ plot_AR_dynamic_orders <- function(h, period = "all") {
 
 # Use distinct filenames to avoid overwriting the fixed-AR model's exports.
 dir.create('results', showWarnings = FALSE, recursive = TRUE)
-write.csv(ar_dynamic_predictions, 'results/AR_dynamic_p_predictions.csv', row.names = FALSE)
-write.csv(rmse_dynamic, 'results/AR_dynamic_p_RMSE_long.csv', row.names = FALSE)
-write.csv(ar_dynamic_order_frequency, 'results/AR_dynamic_p_order_frequency.csv', row.names = FALSE)
+write.csv(ar_dynamic_predictions, 'results/AR/AR_dynamic_p_predictions.csv', row.names = FALSE)
+write.csv(rmse_dynamic, 'results/AR/AR_dynamic_p_RMSE_long.csv', row.names = FALSE)
+write.csv(ar_dynamic_order_frequency, 'results/AR/AR_dynamic_p_order_frequency.csv', row.names = FALSE)
 rmse_all_horizons <- dplyr::bind_rows(rmse_dynamic_tables, .id = "Horizon")
-write.csv(rmse_all_horizons, "results/AR_dynamic_p_RMSE.csv", row.names = FALSE)
+write.csv(rmse_all_horizons, "results/AR/AR_dynamic_p_RMSE.csv", row.names = FALSE)
 
 AR_order_frequency <- function(period = "all") {
   
