@@ -327,12 +327,11 @@ plot_AR <- function(h, period = "all", p = NULL) {
 }
 
 ############ Export results ##########
-dir.create('results', showWarnings = FALSE)
-write.csv(ar_all_predictions, 'results/AR_fixed_p_predictions.csv', row.names = FALSE)
-write.csv(rmse_results, 'results/AR_fixed_p_RMSE_long.csv', row.names = FALSE)
+write.csv(ar_all_predictions, 'results/AR/AR_fixed_p_predictions.csv', row.names = FALSE)
+write.csv(rmse_results, 'results/AR/AR_fixed_p_RMSE_long.csv', row.names = FALSE)
 for (h in horizons) {
   write.csv(rmse_tables[[paste0('h', h)]],
-            paste0('results/AR_fixed_p_RMSE_h', h, '.csv'), row.names = FALSE)
+            paste0('results/AR/AR_fixed_p_RMSE_h', h, '.csv'), row.names = FALSE)
 }
 
 # Example plots, after all results exist:
