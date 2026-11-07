@@ -181,3 +181,104 @@ for (nm in names(plots)) {
     dpi = 300
   )
 }
+
+# ====================================================================================
+# Correlation matrix of the predictors (CAN_US panel = every CAN and US predictor)
+# ====================================================================================
+# Estimated on the pre-COVID sample so the 2020 outliers do not drive the correlations.
+corr_end <- as.Date("2019-12-01")
+
+panel <- read_excel("data/CAN_US_data_cleaned.xlsx") %>% mutate(Date = as.Date(Date))
+X <- panel %>%
+  filter(Date <= corr_end) %>%
+  select(Employ_Rate_diff_lag1, !matches("^(Date|Employ_Rate|COVID_)"))   # same predictor set the models use
+
+# Attach each predictor's economic group (master_metadata), ordered CAN first, then US
+meta <- read_excel("data/master_metadata.xlsx", sheet = "master")
+norm <- function(x) tolower(gsub("[^A-Za-z0-9]", "", x))                  # "S.P.500" matches "S&P 500"
+meta_key <- meta %>%
+  transmute(key = paste(country, norm(variable)), Group = `group name`, Code = group) %>%
+  distinct(key, .keep_all = TRUE)
+
+vars <- tibble(Variable = names(X)) %>%
+  mutate(Country = if_else(grepl("^US_", Variable), "US", "CAN"),
+         key = paste(if_else(Country == "US", "USA", "CAN"), norm(sub("^US_", "", Variable)))) %>%
+  left_join(meta_key, by = "key") %>%
+  mutate(Group = if_else(Variable == "Employ_Rate_diff_lag1", "Own lag (employment change)", Group),
+         Code  = if_else(Variable == "Employ_Rate_diff_lag1", 0, Code),
+         Block = paste(Country, Group)) %>%
+  arrange(desc(Country == "CAN"), Code, match(Variable, names(X)))
+stopifnot(!anyNA(vars$Group), nrow(vars) == ncol(X))                       # every predictor found its group
+
+R <- cor(X[vars$Variable])
+blocks <- unique(vars$Block)
+size   <- table(factor(vars$Block, blocks))
+edge   <- cumsum(size) + 0.5                                               # group boundaries on the plot grid
+mid    <- vars$Variable[round(cumsum(size) - size / 2 + 0.5)]              # one tick per group, at its centre
+n      <- nrow(vars)
+can_edge <- edge[sum(startsWith(blocks, "CAN"))]                            # last Canadian group ends here
+
+# ---- Figure 1: full matrix, variables grouped by economic category ----
+cor_long <- as.data.frame(as.table(R), responseName = "r") %>%
+  mutate(Var1 = factor(Var1, vars$Variable), Var2 = factor(Var2, rev(vars$Variable)))
+
+p_corr <- ggplot(cor_long, aes(Var1, Var2, fill = r)) +
+  geom_raster() +
+  geom_vline(xintercept = edge[-length(edge)], colour = "grey30", linewidth = 0.2) +
+  geom_hline(yintercept = n - edge[-length(edge)] + 1, colour = "grey30", linewidth = 0.2) +
+  geom_vline(xintercept = can_edge, colour = "black", linewidth = 0.7) +      # thick line: CAN | US
+  geom_hline(yintercept = n - can_edge + 1, colour = "black", linewidth = 0.7) +
+  scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948", midpoint = 0,
+                       limits = c(-1, 1), name = "Correlation") +
+  scale_x_discrete(breaks = mid, labels = blocks, position = "top") +
+  scale_y_discrete(breaks = rev(mid), labels = rev(blocks)) +
+  coord_fixed() +
+  labs(title = "Correlation matrix of the predictors (CAN_US panel)",
+       subtitle = sprintf("%d predictors, monthly, Feb 1981 - Dec 2019; black lines separate Canadian from US variables", n),
+       x = NULL, y = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid = element_blank(), axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5),
+        legend.position = "right")
+print(p_corr)
+
+# ---- Figure 2: the same matrix summarised by group (average absolute correlation) ----
+M    <- sapply(blocks, function(b) as.numeric(vars$Block == b))            # variables x groups membership
+absR <- abs(R); diag(absR) <- 0
+pairs_n <- t(M) %*% (matrix(1, n, n) - diag(n)) %*% M                      # number of distinct variable pairs
+grp <- (t(M) %*% absR %*% M) / pairs_n                                     # NaN for a group of one (own lag) vs itself
+
+grp_long <- as.data.frame(as.table(grp), responseName = "Avg_abs_r") %>%
+  mutate(Var1 = factor(Var1, blocks), Var2 = factor(Var2, rev(blocks)))
+
+p_corr_grp <- ggplot(grp_long, aes(Var1, Var2, fill = Avg_abs_r)) +
+  geom_tile(colour = "white", linewidth = 0.6) +
+  geom_text(aes(label = ifelse(is.finite(Avg_abs_r), sprintf("%.2f", Avg_abs_r), ""), colour = Avg_abs_r > 0.35), size = 2.6, na.rm = TRUE) +
+  scale_colour_manual(values = c(`FALSE` = "#1f1f1d", `TRUE` = "white"), guide = "none") +
+  scale_fill_gradientn(colours = c("#fcfcfb", "#9ec5f4", "#2a78d6", "#0d366b"), limits = c(0, NA),
+                       na.value = "grey90", name = "Average |correlation|") +
+  scale_x_discrete(position = "top") +
+  coord_fixed() +
+  labs(title = "Average absolute correlation between groups of predictors",
+       subtitle = "Diagonal = within-group average (excluding each variable with itself)", x = NULL, y = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(panel.grid = element_blank(), axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0.5))
+print(p_corr_grp)
+
+# ---- Summary: how collinear are the predictors? ----
+up <- which(upper.tri(R), arr.ind = TRUE)
+pair_tbl <- tibble(Var_1 = rownames(R)[up[, 1]], Var_2 = colnames(R)[up[, 2]], r = R[up]) %>%
+  mutate(Type = paste(pmin(vars$Country[match(Var_1, vars$Variable)], vars$Country[match(Var_2, vars$Variable)]),
+                      pmax(vars$Country[match(Var_1, vars$Variable)], vars$Country[match(Var_2, vars$Variable)]),
+                      sep = "-"))
+
+corr_summary <- pair_tbl %>%
+  group_by(Type) %>%
+  summarise(Pairs = n(), Mean_abs_r = mean(abs(r)),
+            Share_abs_r_above_0.5 = mean(abs(r) > 0.5), Share_abs_r_above_0.8 = mean(abs(r) > 0.8),
+            .groups = "drop")
+print(corr_summary, width = Inf)
+print(pair_tbl %>% arrange(desc(abs(r))) %>% slice_head(n = 10), width = Inf)
+
+dir.create("results/EDA", recursive = TRUE, showWarnings = FALSE)
+ggsave("results/EDA/Correlation_Predictors.png", p_corr,     width = 14, height = 13, dpi = 300, bg = "white")
+ggsave("results/EDA/Correlation_By_Group.png",   p_corr_grp, width = 14, height = 13, dpi = 300, bg = "white")
