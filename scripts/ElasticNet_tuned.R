@@ -1,5 +1,6 @@
-# Elastic net: alpha is tuned ONCE (by information criterion, jointly with lambda, on the FIRST training
-# sample of each rolling run) and then held fixed; lambda is re-picked by IC in EVERY window.
+# Elastic net: alpha is tuned ONCE per predictor set x horizon (by information criterion, jointly with lambda,
+# on the FIRST pre-COVID training sample) and then held fixed through the pre- and post-COVID runs;
+# lambda is re-picked by IC in EVERY window.
 
 library(glmnet)
 library(HDeconometrics)    
@@ -48,9 +49,10 @@ run_enet_window <- function(y, X, dum, h, alpha = NULL, ic = "bic") {
        alpha = alphas[best], lambda = lam)
 }
 
-# ---- Rolling window: tune alpha on the first window, re-pick lambda in every window ----
+# ---- Rolling window: re-pick lambda in every window ----
+# alpha = NULL: tune alpha on the first window and keep it. alpha given: use it in every window.
 enet.rolling.window <- function(data, pcols, h, nprev, test_end, window_size = NULL,
-                                use_dummy = FALSE, ic = "bic") {
+                                use_dummy = FALSE, alpha = NULL, ic = "bic") {
   y_name <- paste0("Employ_Rate_diff_h", h)
   d_cols <- if (use_dummy) paste0(c("COVID_Shock_h", "COVID_Recovery_h"), h) else character(0)
   outcome_idx <- match(test_end, data$Date) - (nprev - 1):0
@@ -62,7 +64,7 @@ enet.rolling.window <- function(data, pcols, h, nprev, test_end, window_size = N
     run_enet_window(w[[y_name]], w[, pcols], w[, d_cols, drop = FALSE], h, alpha, ic)
   }
   
-  first <- fit_window(origin_idx[1], NULL)              # alpha search happens here only
+  first <- fit_window(origin_idx[1], alpha)             # alpha search happens here only (if alpha is NULL)
   fits  <- c(list(first), lapply(origin_idx[-1], fit_window, alpha = first$alpha))
   
   pred   <- sapply(fits, `[[`, "pred")
@@ -94,13 +96,14 @@ for (s in names(panels$raw)) {
   data <- panels$raw[[s]]; pcols <- panels$predictor_cols[[s]]
   for (h in horizons) {
     key  <- function(spec) paste(s, h, spec, sep = "_")
-    pre  <- run_or_load(key("Pre_COVID_No_Dummy"), data, pcols, h, n_pre, pre_end)
+    pre  <- run_or_load(key("Pre_COVID_No_Dummy"), data, pcols, h, n_pre, pre_end)   # alpha tuned here
     ws   <- match(pre$forecasts$Forecast_Origin[1], data$Date)        # same window length post-COVID
-    post <- run_or_load(key("Post_COVID_No_Dummy"),   data, pcols, h, n_post, post_end, ws, FALSE)
-    dumm <- run_or_load(key("Post_COVID_With_Dummy"), data, pcols, h, n_post, post_end, ws, TRUE)
+    a    <- pre$choice$Alpha[1]                                       # reuse the cell's alpha post-COVID
+    post <- run_or_load(key("Post_COVID_No_Dummy"),   data, pcols, h, n_post, post_end, ws, FALSE, alpha = a)
+    dumm <- run_or_load(key("Post_COVID_With_Dummy"), data, pcols, h, n_post, post_end, ws, TRUE,  alpha = a)
     enet_results[c(key("Pre_COVID_No_Dummy"), key("Post_COVID_No_Dummy"), key("Post_COVID_With_Dummy"))] <- list(pre, post, dumm)
     
-    # Tag forecasts in the team's standard format. Pre-COVID has no dummy fit (the dummy is
+    # Tag forecasts. Pre-COVID has no dummy fit (the dummy is
     # all zero there), so the same forecasts are reported under both specifications.
     tag <- function(r, period, spec, part = "forecasts") cbind(r[[part]], Predictor_Set = s, Horizon = h,
                                                                Period = period, Specification = spec)
@@ -119,4 +122,4 @@ rmse <- aggregate(cbind(RMSE = Forecast_Error) ~ Predictor_Set + Horizon + Perio
 
 write.csv(preds,   file.path(out_dir, "level_ElasticNet_tuned_predictions.csv"), row.names = FALSE)
 write.csv(rmse,    file.path(out_dir, "level_ElasticNet_tuned_RMSE_summary.csv"), row.names = FALSE)
-write.csv(choices, file.path(out_dir, "level_ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE)  # alpha (constant within a run), lambda and #selected per window
+write.csv(choices, file.path(out_dir, "level_ElasticNet_tuned_alpha_lambda_choice.csv"), row.names = FALSE) 
