@@ -121,8 +121,8 @@ plot_random_walk <- function(h, period = 'all') {
 }
 
 # Save CSVs and all 12 plots without overwriting other model outputs.
-results_dir <- 'results/benchmark'
-plots_dir <- file.path(results_dir, 'Random_Walk_plots')
+results_dir <- 'results/benchmarks'
+plots_dir <- file.path(results_dir, 'level_Random_Walk_plots')
 dir.create(plots_dir, recursive = TRUE, showWarnings = FALSE)
 write.csv(rw_predictions,
           file.path(results_dir, 'level_random_walk_predictions.csv'), row.names = FALSE)
