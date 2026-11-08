@@ -24,7 +24,7 @@ ar <- read_csv("results/AR/level_AR_fixed_p_RMSE_long.csv", show_col_types = FAL
   filter(Model == "AR(1)") %>% mutate(Predictor_Set = "Own lags") %>% select(Model, Predictor_Set, Horizon, Period, Specification, RMSE)
 
 # Random Forest summary is wide (and has empty trailing columns)
-rf <- read_csv("results/random_forest_default/level_RF_RMSE_summary.csv", show_col_types = FALSE) %>%
+rf <- read_csv("results/random_forest_alt/level_RF_alt_RMSE_summary.csv", show_col_types = FALSE) %>%
   select(Predictor_Set, Horizon, Pre_COVID, Post_No_Dummy, Post_With_Dummy) %>%
   pivot_longer(-c(Predictor_Set, Horizon), names_to = "col", values_to = "RMSE") %>%
   mutate(Model = "Random Forest",
