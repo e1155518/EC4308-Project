@@ -68,7 +68,7 @@ g1 <- ggplot(ratio, aes(Horizon, Row, fill = Ratio)) +
                        limits = c(0.75, 1.25), oob = scales::squish, name = "RMSE / random-walk RMSE") +
   facet_grid(Type ~ Panel, scales = "free_y", space = "free_y") +
   labs(title = "Forecast accuracy relative to the random walk",
-       subtitle = "Below 1 = more accurate than forecasting no change in the employment rate; above 1 = less accurate",
+       subtitle = "Below 1 = lower RMSE than forecasting no change in the employment rate; above 1 = higher RMSE",
        x = NULL, y = NULL) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank(), legend.position = "bottom", legend.key.width = unit(2, "cm"),
