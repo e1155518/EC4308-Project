@@ -542,9 +542,63 @@ us_helps_tenpercent   <- dm_sets_results[dm_sets_results$t_h1 > 1.64 | dm_sets_r
                                     dm_sets_results$t_h6 > 1.64 | dm_sets_results$t_h12 > 1.64, ]
 
 
+#########################################
+library(tidyverse)
 
+out_dir <- "results/Result_analysis"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
+# Prepare DM results
+dm_plot <- dm_sets_results %>%
+  filter(Comparison == "CAN vs CAN_US") %>%
+  pivot_longer(
+    cols = matches("^[tp]_h"),
+    names_to = c("Statistic", "Horizon"),
+    names_pattern = "([tp])_h(\\d+)",
+    values_to = "Value"
+  ) %>%
+  pivot_wider(names_from = Statistic, values_from = Value) %>%
+  mutate(
+    Horizon = factor(paste0("h=", Horizon),
+                     levels = paste0("h=", c(1, 3, 6, 12))),
+    Panel = factor(
+      recode(Period,
+             PreCOVID = "Pre-COVID",
+             PostCOVID = "Post-COVID, no dummy",
+             PostCOVID_dummy = "Post-COVID, with dummy"),
+      levels = c("Pre-COVID", "Post-COVID, no dummy",
+                 "Post-COVID, with dummy")
+    ),
+    Model = factor(Model, levels = rev(c(
+      "Random Forest Default", "Random Forest Alternate",
+      "Ridge", "Elastic Net (a = 0.5)", "PCA-LASSO", "rLASSO"
+    )))
+  )
 
+# ---- 1. DM t-statistic heatmap ----
+
+t_limit <- max(abs(dm_plot$t), na.rm = TRUE)
+
+g_dm_t <- ggplot(dm_plot, aes(Horizon, Model, fill = t)) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = sprintf("%.2f", t),
+                colour = abs(t) > 0.6 * t_limit), size = 3.3) +
+  scale_colour_manual(values = c(`FALSE` = "#1f1f1d", `TRUE` = "white"),
+                      guide = "none") +
+  scale_fill_gradient2(low = "#e34948", mid = "#f0efec", high = "#2a78d6",
+                       midpoint = 0, limits = c(-t_limit, t_limit),
+                       name = "DM t-statistic") +
+  facet_wrap(~Panel, nrow = 1) +
+  labs(title = "DM test: CAN vs CAN_US",
+       subtitle = "Positive t = CAN_US performs better; negative t = CAN performs better",
+       x = NULL, y = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank(), legend.position = "bottom",
+        legend.key.width = unit(2, "cm"),
+        strip.text = element_text(face = "bold"))
+
+ggsave(file.path(out_dir, "DM_CAN_vs_CAN_US_t_heatmap.png"),
+       g_dm_t, width = 13, height = 4.5, dpi = 300, bg = "white")
 
 
 
