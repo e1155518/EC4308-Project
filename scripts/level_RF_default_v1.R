@@ -937,21 +937,50 @@ for (set_name in unique(group_summary$Predictor_Set)) {
   }
 }
 
-# Top-20 plots per predictor set, horizon and evaluation period.
-for (set_name in c('CAN', 'US', 'CAN_US')) for (h in c(1,3,6,12)) for (period in plot_periods) {
-  spec <- if (period == 'Pre_COVID') 'No_Dummy' else 'With_Dummy'
-  dat <- indicator_summary %>% filter(Predictor_Set == set_name, Horizon == h, Period == period,
-                                      Specification == spec) %>%
-    mutate(Label = paste(Country_Group, Variable, sep = ' | ')) %>%
-    slice_max(Mean_Percent, n = 20, with_ties = FALSE) %>%
-    arrange(Mean_Percent) %>% mutate(Label = factor(Label, levels = Label))
-  fig <- ggplot(dat, aes(Mean_Percent, Label)) + geom_col(fill = '#2563EB') +
-    labs(title = paste('Top 20 RF indicators:', set_name, '| h=', h),
-         subtitle = paste(period, '|', spec), x = 'Mean relative importance (%)', y = NULL) +
-    theme_minimal(base_size = 11)
-  ggsave(file.path(importance_out, paste0('top20_', set_name, '_h', h, '_', period, '.png')),
-         fig, width = 10, height = 7, dpi = 300)
+
+# Top-20 plots: Pre-COVID, Post-COVID no dummy, Post-COVID with dummy
+plot_specs <- tibble(
+  Period = c("Pre_COVID", "Post_COVID", "Post_COVID"),
+  Specification = c("No_Dummy", "No_Dummy", "With_Dummy"),
+  Suffix = c("no_dummy", "no_dummy", "with_dummy")
+)
+
+for (set_name in c("CAN", "US", "CAN_US")) {
+  for (h in c(1, 3, 6, 12)) {
+    for (i in seq_len(nrow(plot_specs))) {
+      
+      period <- plot_specs$Period[i]
+      spec <- plot_specs$Specification[i]
+      suffix <- plot_specs$Suffix[i]
+      
+      dat <- indicator_summary %>%
+        filter(Predictor_Set == set_name, Horizon == h,
+               Period == period, Specification == spec) %>%
+        mutate(Label = paste(Country_Group, Variable, sep = " | ")) %>%
+        slice_max(Mean_Percent, n = 20, with_ties = FALSE) %>%
+        arrange(Mean_Percent) %>%
+        mutate(Label = factor(Label, levels = Label))
+      
+      if (nrow(dat) == 0) next
+      
+      fig <- ggplot(dat, aes(Mean_Percent, Label)) +
+        geom_col(fill = "#2563EB") +
+        labs(title = paste("Top 20 RF indicators:", set_name, "| h=", h),
+             subtitle = paste(period, "|", spec),
+             x = "Mean relative importance (%)", y = NULL) +
+        theme_minimal(base_size = 11)
+      
+      filename <- paste0(
+        "level_rf_default_top20_", set_name, "_h", h,
+        "_", period, "_", suffix, ".png"
+      )
+      
+      ggsave(file.path(importance_out, filename),
+             fig, width = 10, height = 7, dpi = 300)
+    }
+  }
 }
+
 
 # Canadian vs US relative-importance shares, for CAN+US only.
 country_plot <- country_summary %>% filter(Predictor_Set == 'CAN_US', Period %in% plot_periods,
