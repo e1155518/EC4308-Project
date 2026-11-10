@@ -1,20 +1,19 @@
-# PCA-LASSO on the employment-rate LEVEL: LASSO on lagged principal components + lagged level,
-# lambda chosen by BIC via HDeconometrics::ic.glmnet (as in the professor's code). Run from the project root.
-install.packages("remotes")
-remotes::install_github("gabrielrvsc/HDeconometrics")
-library(HDeconometrics)    # remotes::install_github("gabrielrvsc/HDeconometrics")
+# PCA-LASSO on the employment-rate LEVEL, full series: LASSO on the lagged raw predictors AND their top principal
+# components together (the professor's func-lasso.R design); lambda chosen by BIC via HDeconometrics::ic.glmnet.
+# Run from the project root.
+library(HDeconometrics)    # install once: remotes::install_github("gabrielrvsc/HDeconometrics")
 source("functions/data_prep.R")
-panels <- load_panels()
-n_pcs  <- 10
+panels  <- load_panels()
+n_pcs   <- 10              # principal components per window (the professor's template uses 4)
 out_dir <- "results/level_PCA_LASSO"
 
 # ---- Fit one window, return the h-step forecast from its last row ----
 run_pcalasso_window <- function(y, X, dum, h) {
-  # Factors from this window only; the employment-rate level stays outside the PCA as its own regressor
+  X  <- X[, apply(X, 2, sd) > 0]                        # drop series that are constant in this window
+  # Factors from this window only (data up to the forecast origin, so no look-ahead); the level stays out of the PCA
   Z  <- X[, colnames(X) != "Employ_Rate"]
-  Z  <- Z[, apply(Z, 2, sd) > 0]
   F  <- prcomp(Z, center = TRUE, scale. = TRUE)$x[, 1:n_pcs]
-  X2 <- cbind(Employ_Rate = X$Employ_Rate, F)
+  X2 <- cbind(as.matrix(X), F)                          # raw series (incl. the level) + PCs, side by side
 
   Xl <- embed(X2, n_lags)                               # row = [X2_t, X2_t-1, X2_t-2, X2_t-3]
   colnames(Xl) <- paste0(rep(colnames(X2), n_lags), "_lag", rep(0:(n_lags - 1), each = ncol(X2)))
@@ -31,7 +30,7 @@ run_pcalasso_window <- function(y, X, dum, h) {
     X_out <- cbind(X_out, matrix(0, 1, sum(active)))
   }
 
-  b <- coef(ic.glmnet(X_tr, y_tr, crit = "bic"))        # intercept first
+  b <- coef(ic.glmnet(X_tr, y_tr, crit = "bic"))        # LASSO (alpha = 1); intercept first
   list(pred = b[1] + sum(X_out * b[-1]), selected = colnames(X_tr)[b[-1] != 0])
 }
 
@@ -54,12 +53,12 @@ pcalasso.rolling.window <- function(data, pcols, h, nprev, test_end, window_size
                               Actual = actual, Predicted = pred, Forecast_Error = actual - pred))
 }
 
-# ---- Run every panel x horizon x spec, caching each result to disk ----
+# ---- Run every panel x horizon x spec, caching each result to disk (a stopped run resumes) ----
 dir.create(file.path(out_dir, "level_PCA_LASSO_batches"), recursive = TRUE, showWarnings = FALSE)
 run_or_load <- function(key, ...) {
   f <- file.path(out_dir, "level_PCA_LASSO_batches", paste0(key, ".rds"))
   if (file.exists(f)) return(readRDS(f))
-  cat("Running", key, "\n")
+  cat(format(Sys.time(), "%H:%M"), "Running", key, "\n")
   res <- pcalasso.rolling.window(...)
   saveRDS(res, f)
   res
