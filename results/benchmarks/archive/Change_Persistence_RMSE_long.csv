@@ -1,0 +1,13 @@
+"Horizon","Model","Specification","Period","RMSE"
+1,"Change_Persistence","No_Dummy","Post_COVID",1.1995168109327
+1,"Change_Persistence","No_Dummy","Pre_COVID",0.195703857907811
+3,"Change_Persistence","No_Dummy","Post_COVID",3.32513484525522
+3,"Change_Persistence","No_Dummy","Pre_COVID",0.2343074902772
+6,"Change_Persistence","No_Dummy","Post_COVID",4.09465894600002
+6,"Change_Persistence","No_Dummy","Pre_COVID",0.331511689085016
+12,"Change_Persistence","No_Dummy","Post_COVID",4.60621822939509
+12,"Change_Persistence","No_Dummy","Pre_COVID",0.561426753904727
+1,"Change_Persistence","No_Dummy","All",0.781100725383907
+3,"Change_Persistence","No_Dummy","All",2.13229603726419
+6,"Change_Persistence","No_Dummy","All",2.62876666921647
+12,"Change_Persistence","No_Dummy","All",2.97475572066567
