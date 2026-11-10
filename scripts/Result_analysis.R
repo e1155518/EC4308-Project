@@ -23,14 +23,18 @@ read_long <- function(path, model) {
 ar <- read_csv("results/AR/level_AR_fixed_p_RMSE_long.csv", show_col_types = FALSE) %>%
   filter(Model == "AR(1)") %>% mutate(Predictor_Set = "Own lags") %>% select(Model, Predictor_Set, Horizon, Period, Specification, RMSE)
 
-# Random Forest summary is wide (and has empty trailing columns)
-rf <- read_csv("results/random_forest_alt/level_RF_alt_RMSE_summary.csv", show_col_types = FALSE) %>%
-  select(Predictor_Set, Horizon, Pre_COVID, Post_No_Dummy, Post_With_Dummy) %>%
-  pivot_longer(-c(Predictor_Set, Horizon), names_to = "col", values_to = "RMSE") %>%
-  mutate(Model = "Random Forest",
-         Period = if_else(col == "Pre_COVID", "Pre_COVID", "Post_COVID"),
-         Specification = if_else(col == "Post_With_Dummy", "With_Dummy", "No_Dummy")) %>%
-  select(Model, Predictor_Set, Horizon, Period, Specification, RMSE)
+# Both Random Forest summaries are wide (and may have empty trailing columns)
+rf_paths <- c("Random Forest (Default)" = "results/random_forest_default/level_RF_RMSE_summary.csv",
+              "Random Forest (Tuned)" = "results/random_forest_alt/level_RF_alt_RMSE_summary.csv")
+rf <- imap_dfr(rf_paths, function(path, model) {
+  read_csv(path, show_col_types = FALSE) %>%
+    select(Predictor_Set, Horizon, Pre_COVID, Post_No_Dummy, Post_With_Dummy) %>%
+    pivot_longer(-c(Predictor_Set, Horizon), names_to = "col", values_to = "RMSE") %>%
+    mutate(Model = model,
+           Period = if_else(col == "Pre_COVID", "Pre_COVID", "Post_COVID"),
+           Specification = if_else(col == "Post_With_Dummy", "With_Dummy", "No_Dummy")) %>%
+    select(Model, Predictor_Set, Horizon, Period, Specification, RMSE)
+})
 
 predictor_models <- c("Ridge" = "results/Ridge/level_Ridge_RMSE_summary.csv",
                       "Elastic Net (a = 0.5)" = "results/ElasticNet_a05/level_ElasticNet_a05_RMSE_summary.csv",
@@ -38,7 +42,7 @@ predictor_models <- c("Ridge" = "results/Ridge/level_Ridge_RMSE_summary.csv",
                       "rLASSO" = "results/level_rLASSO/level_rLASSO_RMSE_summary.csv")
 rmse <- bind_rows(ar, rf, imap_dfr(predictor_models, ~ read_long(.x, .y))) %>%
   filter(Period != "All", !(Period == "Pre_COVID" & Specification == "With_Dummy"))  # pre-COVID has no dummy fit
-model_order <- c("AR(1)", "Random Forest", names(predictor_models))
+model_order <- c("AR(1)", names(rf_paths), names(predictor_models))
 
 rw <- read_csv("results/benchmarks/level_random_walk_RMSE_long.csv", show_col_types = FALSE) %>%
   filter(Period != "All") %>% select(Horizon, Period, RW_RMSE = RMSE)
@@ -149,7 +153,8 @@ pred_paths <- c("Ridge" = "results/Ridge/level_Ridge_predictions.csv",
                 "Elastic Net (a = 0.5)" = "results/ElasticNet_a05/level_ElasticNet_a05_predictions.csv",
                 "PCA-LASSO" = "results/level_PCA_LASSO/level_PCA_LASSO_predictions.csv",
                 "rLASSO" = "results/level_rLASSO/level_rLASSO_predictions.csv",
-                "Random Forest" = "results/random_forest_default/level_RF_predictions.csv")
+                "Random Forest (Default)" = "results/random_forest_default/level_RF_predictions.csv",
+                "Random Forest (Tuned)" = "results/random_forest_alt/level_RF_alt_predictions.csv")
 cum_diff <- imap_dfr(pred_paths, ~ read_csv(.x, show_col_types = FALSE) %>% mutate(Model = .y)) %>%
   filter(Predictor_Set %in% c("CAN", "CAN_US"), !(Period == "Pre_COVID" & Specification == "With_Dummy")) %>%
   mutate(Panel = panel_of(Period, Specification), Model = factor(Model, names(pred_paths)), Horizon = hlab(Horizon)) %>%
