@@ -91,13 +91,57 @@ g3 <- ggplot(us_gain, aes(Horizon, Model, fill = Ratio)) +
   scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948", midpoint = 1,
                        limits = c(0.85, 1.15), oob = scales::squish, name = "RMSE (CAN_US) / RMSE (CAN)") +
   facet_wrap(~Panel) +
-  labs(title = "Does adding US indicators improve forecasts of Canadian employment?",
+  labs(title = "Does adding US indicators improve forecasts of Canadian employment rate?",
        subtitle = "Below 1 = the CAN_US predictor set forecasts better than the Canadian-only set; above 1 = worse",
        x = NULL, y = NULL) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank(), legend.position = "bottom", legend.key.width = unit(2, "cm"),
         strip.text = element_text(face = "bold"))
 ggsave(file.path(out_dir, "CAN_vs_CAN_US_heatmap.png"), g3, width = 13, height = 4.5, dpi = 300, bg = "white")
+
+# ---- 3b. Raw RMSE heatmap (global colour scale) ----
+
+rw_plot <- rw %>%
+  mutate(Model = "Random Walk", Predictor_Set = "Own lags",
+         Specification = "No_Dummy", RMSE = RW_RMSE) %>%
+  select(Model, Predictor_Set, Horizon, Period, Specification, RMSE)
+
+g3_raw_data <- bind_rows(rmse, rw_plot) %>%
+  mutate(Panel = panel_of(Period, Specification),
+         Horizon = hlab(Horizon),
+         Model = factor(Model, c("Random Walk", model_order)),
+         Predictor_Set = factor(Predictor_Set, c("Own lags", "CAN", "US", "CAN_US"))) %>%
+  arrange(Model, Predictor_Set) %>%
+  mutate(Row = fct_rev(fct_inorder(if_else(Predictor_Set == "Own lags",
+                                           as.character(Model), paste(Model, Predictor_Set, sep = " | ")))))
+
+# Repeat random walk in the post-COVID with-dummy panel
+g3_raw_data <- bind_rows(g3_raw_data,
+                         g3_raw_data %>% filter(Model == "Random Walk", Period == "Post_COVID") %>%
+                           mutate(Specification = "With_Dummy", Panel = panel_of(Period, Specification)))
+
+rmse_min <- min(g3_raw_data$RMSE, na.rm = TRUE)
+rmse_max <- max(g3_raw_data$RMSE, na.rm = TRUE)
+rmse_mid <- (rmse_min + rmse_max) / 2
+
+g3_raw <- ggplot(g3_raw_data, aes(Horizon, Row, fill = RMSE)) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(aes(label = sprintf("%.3f", RMSE),
+                colour = abs(RMSE - rmse_mid) > 0.3 * (rmse_max - rmse_min)), size = 3) +
+  scale_colour_manual(values = c(`FALSE` = "#1f1f1d", `TRUE` = "white"), guide = "none") +
+  scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948",
+                       midpoint = rmse_mid, limits = c(rmse_min, rmse_max), name = "RMSE") +
+  facet_grid(. ~ Panel) +
+  labs(title = "Forecast accuracy across models",
+       subtitle = "Cell values = raw RMSE; blue = lower RMSE, red = higher RMSE",
+       x = "Forecast horizon", y = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank(), legend.position = "bottom",
+        legend.key.width = unit(2, "cm"), strip.text = element_text(face = "bold"))
+
+ggsave(file.path(out_dir, "RMSE_raw_heatmap.png"), g3_raw,
+       width = 15, height = 10, dpi = 300, bg = "white")
+
 
 # ---- 3. Cumulative squared-error difference, CAN-only vs CAN_US ----
 # Running sum of (CAN error^2 - CAN_US error^2): rising = US data helped so far, falling = it hurt. Restarts in each panel.
