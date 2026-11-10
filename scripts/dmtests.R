@@ -542,69 +542,182 @@ us_helps_tenpercent   <- dm_sets_results[dm_sets_results$t_h1 > 1.64 | dm_sets_r
                                     dm_sets_results$t_h6 > 1.64 | dm_sets_results$t_h12 > 1.64, ]
 
 
-#########################################
-library(tidyverse)
+
+
+################################
+### Simple Average Forecasts####
+################################
+
+
+#Ridge was shown to have much higher RMSE due to the extremely large regularisation parameter it chose, so we'll split the averages into
+#all and all excluding ridge
+
+avg_versions <- list(
+  "Simple average (All)"    = c("Random Forest Default", "PCA-LASSO", "rLASSO", "Elastic Net (a = 0.5)", "Ridge"),
+  "Simple average (exclude Ridge)" = c("Random Forest Default", "PCA-LASSO", "rLASSO", "Elastic Net (a = 0.5)")
+)
+
+
+### Averaged forecasts stored as lists similar to splits above:
+###    avg_lists[[average]][[set]][[h_name]][[period]]
+avg_lists <- list()
+
+for (a in names(avg_versions)) {                     # loop over the two averages
+  for (s in sets) {                                  # loop over predictor sets
+    for (h in horizons) {                            # loop over horizons
+      for (p in test_periods) {                      # loop over test periods
+        h_name <- paste0("h", h)
+        
+        # Take the dates and actual values from the first model's slice
+        first_model <- avg_versions[[a]][1]
+        slice <- model_lists[[first_model]][[s]][[h_name]][[p]]
+        
+        # Put each model's forecasts side by side, one column per model
+        preds <- c()
+        for (m in avg_versions[[a]]) {
+          preds <- cbind(preds, model_lists[[m]][[s]][[h_name]][[p]]$Predicted)
+        }
+        
+        # Average across the models, then recompute the errors
+        slice$Predicted      <- rowMeans(preds)
+        slice$Forecast_Error <- slice$Actual - slice$Predicted
+        slice$SqErr          <- slice$Forecast_Error^2
+        
+        avg_lists[[a]][[s]][[h_name]][[p]] <- slice
+      }
+    }
+  }
+}
+
+
+
+### DM Test for each average vs AR(1) and Random Walk
+avg_dm_results <- data.frame()
+
+for (b in names(benchmark_lists)) {                  # loop over benchmarks
+  for (a in names(avg_lists)) {                      # loop over the two averages
+    for (s in sets) {                                # loop over predictor sets
+      for (p in test_periods) {                      # loop over test periods
+        
+        # The random walk has no PostCOVID_dummy slice
+        p_bench <- if (b == "Random walk" && p == "PostCOVID_dummy") "PostCOVID" else p
+        
+        t_stats <- c()                               # one DM t-statistic per horizon
+        
+        for (h in horizons) {                        # loop over horizons
+          h_name <- paste0("h", h)
+          
+          l_bench <- benchmark_lists[[b]][["CAN"]][[h_name]][[p_bench]]$SqErr
+          l_avg   <- avg_lists[[a]][[s]][[h_name]][[p]]$SqErr
+          
+          # Loss differential, benchmark minus average
+          d <- l_bench - l_avg
+          
+          # DM regression on a constant with Newey-West variance
+          dm_reg <- lm(d ~ 1)
+          t_stats[h_name] <- as.numeric(dm_reg$coefficients / sqrt(NeweyWest(dm_reg, lag = nw_lag)))
+        }
+        
+        one_row <- data.frame(
+          Model     = a,
+          Benchmark = b,
+          Set       = s,
+          Period    = p,
+          
+          t_h1  = t_stats[["h1"]],
+          t_h3  = t_stats[["h3"]],
+          t_h6  = t_stats[["h6"]],
+          t_h12 = t_stats[["h12"]],
+          
+          p_h1  = 2 * pnorm(-abs(t_stats[["h1"]])),     # two-sided p-values
+          p_h3  = 2 * pnorm(-abs(t_stats[["h3"]])),
+          p_h6  = 2 * pnorm(-abs(t_stats[["h6"]])),
+          p_h12 = 2 * pnorm(-abs(t_stats[["h12"]]))
+        )
+        
+        avg_dm_results <- rbind(avg_dm_results, one_row)
+      }
+    }
+  }
+}
+
+# Positive t -> average had lower loss/outperformed benchmark
+avg_dm_results
+
+
+avg_outperformers_fivepercent <- avg_dm_results[avg_dm_results$t_h1 > 1.96 | avg_dm_results$t_h3 > 1.96 |
+                                                  avg_dm_results$t_h6 > 1.96 | avg_dm_results$t_h12 > 1.96, ]
+avg_outperformers_tenpercent  <- avg_dm_results[avg_dm_results$t_h1 > 1.64 | avg_dm_results$t_h3 > 1.64 |
+                                                  avg_dm_results$t_h6 > 1.64 | avg_dm_results$t_h12 > 1.64, ]
+avg_outperformers_twelvepercent  <- avg_dm_results[avg_dm_results$t_h1 > 1.5341 | avg_dm_results$t_h3 > 1.5341 |
+                                                  avg_dm_results$t_h6 > 1.5341 | avg_dm_results$t_h12 > 1.5341, ]
+avg_outperformers_twentypercent  <- avg_dm_results[avg_dm_results$t_h1 > 1.28 | avg_dm_results$t_h3 > 1.28 |
+                                                     avg_dm_results$t_h6 > 1.28 | avg_dm_results$t_h12 > 1.28, ]
+
+##RMSEs for average
+#RMSE relative to the random walk (< 1 = beats RW), for the averages and each model
+
+rmse_forecasts <- c(unique(unlist(avg_versions)), names(avg_lists))
+avg_rmse_results <- data.frame()
+
+for (f in rmse_forecasts) {                          # loop over single models and averages
+  for (s in sets) {                                  # loop over predictor sets
+    for (p in test_periods) {                        # loop over test periods
+      
+      p_rw <- if (p == "PostCOVID_dummy") "PostCOVID" else p
+      ratios <- c()                                  # one RMSE ratio per horizon
+      
+      for (h in horizons) {                          # loop over horizons
+        h_name <- paste0("h", h)
+        
+        # Squared errors of this forecast: from avg_lists for an average, model_lists otherwise
+        if (f %in% names(avg_lists)) {
+          sq_err <- avg_lists[[f]][[s]][[h_name]][[p]]$SqErr
+        } else {
+          sq_err <- model_lists[[f]][[s]][[h_name]][[p]]$SqErr
+        }
+        sq_err_rw <- RWsplit_preds[["CAN"]][[h_name]][[p_rw]]$SqErr
+        
+        ratios[h_name] <- sqrt(mean(sq_err)) / sqrt(mean(sq_err_rw))
+      }
+      
+      one_row <- data.frame(
+        Forecast  = f,
+        Set       = s,
+        Period    = p,
+        ratio_h1  = ratios[["h1"]],
+        ratio_h3  = ratios[["h3"]],
+        ratio_h6  = ratios[["h6"]],
+        ratio_h12 = ratios[["h12"]]
+      )
+      
+      avg_rmse_results <- rbind(avg_rmse_results, one_row)
+    }
+  }
+}
+
+avg_rmse_results
+
+# E.g. one period and set at a time
+avg_rmse_results[avg_rmse_results$Period == "PostCOVID" & avg_rmse_results$Set == "CAN", ]
+
+
+
+###Export to CSV###
 
 out_dir <- "results/Result_analysis"
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-# Prepare DM results
-dm_plot <- dm_sets_results %>%
-  filter(Comparison == "CAN vs CAN_US") %>%
-  pivot_longer(
-    cols = matches("^[tp]_h"),
-    names_to = c("Statistic", "Horizon"),
-    names_pattern = "([tp])_h(\\d+)",
-    values_to = "Value"
-  ) %>%
-  pivot_wider(names_from = Statistic, values_from = Value) %>%
-  mutate(
-    Horizon = factor(paste0("h=", Horizon),
-                     levels = paste0("h=", c(1, 3, 6, 12))),
-    Panel = factor(
-      recode(Period,
-             PreCOVID = "Pre-COVID",
-             PostCOVID = "Post-COVID, no dummy",
-             PostCOVID_dummy = "Post-COVID, with dummy"),
-      levels = c("Pre-COVID", "Post-COVID, no dummy",
-                 "Post-COVID, with dummy")
-    ),
-    Model = factor(Model, levels = rev(c(
-      "Random Forest Default", "Random Forest Alternate",
-      "Ridge", "Elastic Net (a = 0.5)", "PCA-LASSO", "rLASSO"
-    )))
-  )
+# DM test for 6 models vs AR(1)/RW: t > 0 means the model beats the benchmark
+write.csv(dm_results,       file.path(out_dir, "DM_models_vs_benchmarks.csv"),row.names = FALSE)
 
-# ---- 1. DM t-statistic heatmap ----
+# DM test for CAN vs CAN_US and CAN vs US within each model: t > 0 means the set with US data beats Canada-only
+write.csv(dm_sets_results,  file.path(out_dir, "DM_CAN_vs_other_sets.csv"), row.names = FALSE)
 
-t_limit <- max(abs(dm_plot$t), na.rm = TRUE)
+# Both simple averages vs AR(1) and random walk: t > 0 means the average beats the benchmark
+write.csv(avg_dm_results,   file.path(out_dir, "DM_simple_average_vs_benchmarks.csv"), row.names = FALSE)
 
-g_dm_t <- ggplot(dm_plot, aes(Horizon, Model, fill = t)) +
-  geom_tile(colour = "white", linewidth = 0.8) +
-  geom_text(aes(label = sprintf("%.2f", t),
-                colour = abs(t) > 0.6 * t_limit), size = 3.3) +
-  scale_colour_manual(values = c(`FALSE` = "#1f1f1d", `TRUE` = "white"),
-                      guide = "none") +
-  scale_fill_gradient2(low = "#e34948", mid = "#f0efec", high = "#2a78d6",
-                       midpoint = 0, limits = c(-t_limit, t_limit),
-                       name = "DM t-statistic") +
-  facet_wrap(~Panel, nrow = 1) +
-  labs(title = "DM test: CAN vs CAN_US",
-       subtitle = "Positive t = CAN_US performs better; negative t = CAN performs better",
-       x = NULL, y = NULL) +
-  theme_minimal(base_size = 12) +
-  theme(panel.grid = element_blank(), legend.position = "bottom",
-        legend.key.width = unit(2, "cm"),
-        strip.text = element_text(face = "bold"))
-
-ggsave(file.path(out_dir, "DM_CAN_vs_CAN_US_t_heatmap.png"),
-       g_dm_t, width = 13, height = 4.5, dpi = 300, bg = "white")
-
-
-
-
-
-
+# RMSE for ensemble: < 1 means it beats the random walk
+write.csv(avg_rmse_results, file.path(out_dir, "RMSE_ensemble_ratios.csv"), row.names = FALSE)
 
 
 
