@@ -8,7 +8,8 @@ library(sandwich) #library to estimate variance for DM test regression using New
 in_dir <- "results/Predictions"
 
 
-RF_pred <- read.csv(file.path(in_dir,"level_RF_predictions.csv"), na = "NA")
+RF_def_pred <- read.csv(file.path(in_dir,"level_RF_default_predictions.csv"), na = "NA")
+RF_alt_pred <- read.csv(file.path(in_dir, "level_RF_alt_predictions.csv"), na = "NA")
 PCA_LASSO_pred <- read.csv(file.path(in_dir,"level_PCA_LASSO_predictions.csv"), na = "NA")
 rLASSO_pred <- read.csv(file.path(in_dir,"level_rLASSO_predictions.csv"), na = "NA")
 Elnet_pred <- read.csv(file.path(in_dir,"level_ElasticNet_a05_predictions.csv"), na = "NA")
@@ -18,7 +19,8 @@ RW_pred <- read.csv(file.path(in_dir,"level_random_walk_predictions.csv"), na = 
 AR_pred <- read.csv(file.path(in_dir,"level_AR_fixed_p_predictions.csv"), na = "NA")
 
 ## Calc Squared Errors Column
-RF_pred["SqErr"] <- RF_pred$Forecast_Error^2
+RF_def_pred["SqErr"] <- RF_def_pred$Forecast_Error^2
+RF_alt_pred["SqErr"] <- RF_alt_pred$Forecast_Error^2
 PCA_LASSO_pred["SqErr"] <- PCA_LASSO_pred$Forecast_Error^2
 rLASSO_pred["SqErr"] <- rLASSO_pred$Forecast_Error^2
 Elnet_pred["SqErr"] <- Elnet_pred$Forecast_Error^2
@@ -50,21 +52,41 @@ get_slice <- function(df, h, period, set) {
   slice[order(slice$Outcome_Date), ]
 }
 
-#RF
-RFsplit_preds <- list()
+#RF default
+RFdefsplit_preds <- list()
 for (s in sets){
   for (h in horizons){
     for (p in names(period)){
       h_name <- paste0("h",h)
       
       slice <- get_slice(
-        df = RF_pred,
+        df = RF_def_pred,
         h = h,
         period = period[[p]],
         set = s
       )
       
-      RFsplit_preds[[s]][[h_name]][[p]] <- slice
+      RFdefsplit_preds[[s]][[h_name]][[p]] <- slice
+      
+    }
+  }
+}
+
+#RFalt
+RFaltsplit_preds <- list()
+for (s in sets){
+  for (h in horizons){
+    for (p in names(period)){
+      h_name <- paste0("h",h)
+      
+      slice <- get_slice(
+        df = RF_alt_pred,
+        h = h,
+        period = period[[p]],
+        set = s
+      )
+      
+      RFaltsplit_preds[[s]][[h_name]][[p]] <- slice
       
     }
   }
@@ -229,10 +251,10 @@ lar12post = (ARsplit_preds[["CAN"]][["h12"]][["PostCOVID"]]$SqErr)
 ##AR-RF PRE##
 
 #Compute squared loss for different horizons (RF)
-lrf1pre=(RFsplit_preds[["CAN"]][["h1"]][["PreCOVID"]]$SqErr)
-lrf3pre=(RFsplit_preds[["CAN"]][["h3"]][["PreCOVID"]]$SqErr)
-lrf6pre=(RFsplit_preds[["CAN"]][["h6"]][["PreCOVID"]]$SqErr)
-lrf12pre=(RFsplit_preds[["CAN"]][["h12"]][["PreCOVID"]]$SqErr)
+lrf1pre=(RFdefsplit_preds[["CAN"]][["h1"]][["PreCOVID"]]$SqErr)
+lrf3pre=(RFdefsplit_preds[["CAN"]][["h3"]][["PreCOVID"]]$SqErr)
+lrf6pre=(RFdefsplit_preds[["CAN"]][["h6"]][["PreCOVID"]]$SqErr)
+lrf12pre=(RFdefsplit_preds[["CAN"]][["h12"]][["PreCOVID"]]$SqErr)
 
 
 #Compute loss differentials (d_t) for different horizons (AR-RF)
@@ -345,7 +367,8 @@ dmrwrfpre_results <- data.frame(
 
 # The models to test, and the split lists that hold their slices
 model_lists <- list(
-  "Random Forest"         = RFsplit_preds,
+  "Random Forest Default"         = RFdefsplit_preds,
+  "Random Forest Alternate"         = RFaltsplit_preds,
   "PCA-LASSO"             = PCALASSOsplit_preds,
   "rLASSO"                = rLASSOsplit_preds,
   "Elastic Net (a = 0.5)" = Elnetsplit_preds,
@@ -424,9 +447,107 @@ dm_results[dm_results$Benchmark == "AR(1)" & dm_results$Period == "PreCOVID", ]
 dm_results[dm_results$Model == "Random Forest" & dm_results$Set == "CAN", ]
 
 
+###############
+### Analysis###
+###############
+
+#at 5% significance level
+outperformers_fivepercent = dm_results[dm_results$t_h1 > 1.96 | dm_results$t_h3 > 1.96 |
+                           dm_results$t_h6 > 1.96 | dm_results$t_h12 > 1.96, ]
+#at 10% significance level
+outperformers_tenpercent = dm_results[dm_results$t_h1 > 1.64 | dm_results$t_h3 > 1.64 |
+                             dm_results$t_h6 > 1.64 | dm_results$t_h12 > 1.64, ]
+
+#at 12.5% significance level
+outperformers_twelvepercent = dm_results[dm_results$t_h1 > 1.5341 | dm_results$t_h3 > 1.5341 |
+                                        dm_results$t_h6 > 1.5341 | dm_results$t_h12 > 1.5341, ]
+
+#at 20% significance level
+outperformers_twentypercent = dm_results[dm_results$t_h1 > 1.28 | dm_results$t_h3 > 1.28 |
+                                           dm_results$t_h6 > 1.28 | dm_results$t_h12 > 1.28, ]
 
 
-####
+
+################################################################
+### CAN VS CAN_US####
+###CAN vs CAN_US  and  CAN vs US
+### d = SqErr(CAN) - SqErr(other set): t > 0 means the other set (CAN_US or US) beats Canada-only
+##################################################################
+
+# CAN vs Other Set
+set_pairs <- list(
+  "CAN vs CAN_US" = c("CAN", "CAN_US"),
+  "CAN vs US"     = c("CAN", "US")
+)
+
+dm_sets_results <- data.frame()
+
+for (m in names(model_lists)) {                      # loop over models
+  for (pr in names(set_pairs)) {                     # loop over set comparisons
+    for (p in test_periods) {                        # loop over test periods
+      
+      base_set  <- set_pairs[[pr]][1]                # "CAN"
+      other_set <- set_pairs[[pr]][2]                # "CAN_US" or "US"
+      
+      t_stats <- c()                                 # one DM t-statistic per horizon
+      
+      for (h in horizons) {                          # loop over horizons
+        h_name <- paste0("h", h)
+        
+        # Squared losses of the same model with the two predictor sets
+        l_base  <- model_lists[[m]][[base_set]][[h_name]][[p]]$SqErr
+        l_other <- model_lists[[m]][[other_set]][[h_name]][[p]]$SqErr
+        
+        # Loss differential, CAN minus the other set
+        d <- l_base - l_other
+        
+        # DM regression on a constant with Newey-West variance
+        dm_reg <- lm(d ~ 1)
+        t_stats[h_name] <- as.numeric(dm_reg$coefficients / sqrt(NeweyWest(dm_reg, lag = nw_lag)))
+      }
+      
+      # One row per model / comparison / period
+      one_row <- data.frame(
+        Model      = m,
+        Comparison = pr,
+        Base_Set   = base_set,
+        Other_Set  = other_set,
+        Period     = p,
+        
+        t_h1  = t_stats[["h1"]],
+        t_h3  = t_stats[["h3"]],
+        t_h6  = t_stats[["h6"]],
+        t_h12 = t_stats[["h12"]],
+        
+        p_h1  = 2 * pnorm(-abs(t_stats[["h1"]])),     # two-sided p-values
+        p_h3  = 2 * pnorm(-abs(t_stats[["h3"]])),
+        p_h6  = 2 * pnorm(-abs(t_stats[["h6"]])),
+        p_h12 = 2 * pnorm(-abs(t_stats[["h12"]]))
+      )
+      
+      dm_sets_results <- rbind(dm_sets_results, one_row)
+      
+    }
+  }
+}
+
+# t > 0: using the other set (CAN_US or US) gives lower loss than Canada-only
+dm_sets_results
+
+# Significant at 5% in either direction
+us_helps_fivepercent   <- dm_sets_results[dm_sets_results$t_h1 > 1.96 | dm_sets_results$t_h3 > 1.96 |
+                                    dm_sets_results$t_h6 > 1.96 | dm_sets_results$t_h12 > 1.96, ]
+
+us_helps_tenpercent   <- dm_sets_results[dm_sets_results$t_h1 > 1.64 | dm_sets_results$t_h3 > 1.64 |
+                                    dm_sets_results$t_h6 > 1.64 | dm_sets_results$t_h12 > 1.64, ]
+
+
+
+
+
+
+
+
 
 
 
