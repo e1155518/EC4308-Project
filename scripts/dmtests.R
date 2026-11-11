@@ -721,4 +721,170 @@ write.csv(avg_rmse_results, file.path(out_dir, "RMSE_ensemble_ratios.csv"), row.
 
 
 
+############### yihong plots dont delete me please ###################
+
+library(tidyverse)
+
+out_dir <- "results/Result_analysis"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+# ---- 1. Calculate US vs CAN_US (not in existing results) ----
+dm_us_canus <- data.frame()
+
+for (m in names(model_lists)) {
+  for (p in test_periods) {
+    t_stats <- sapply(horizons, function(h) {
+      hn <- paste0("h", h)
+      us <- model_lists[[m]][["US"]][[hn]][[p]]
+      both <- model_lists[[m]][["CAN_US"]][[hn]][[p]]
+      
+      # Align forecasts by outcome date
+      paired <- inner_join(
+        us[, c("Outcome_Date", "SqErr")],
+        both[, c("Outcome_Date", "SqErr")],
+        by = "Outcome_Date", suffix = c("_US", "_CANUS")
+      )
+      if (!nrow(paired)) stop("No matching forecast dates: ", m, " ", p, " h=", h)
+      d <- paired$SqErr_US - paired$SqErr_CANUS
+      fit <- lm(d ~ 1)
+      v <- as.numeric(sandwich::NeweyWest(fit, lag = nw_lag, prewhite = FALSE))
+      
+      if (!is.finite(v) || v <= 0) {
+        if (all(abs(d - d[1]) < 1e-12)) {
+          return(NA_real_)
+        }
+        stop("Invalid HAC variance: ", m, " | ", p, " | h=", h)
+      }
+      
+      as.numeric(coef(fit)) / sqrt(v)
+    })
+    
+    dm_us_canus <- bind_rows(dm_us_canus, data.frame(
+      Model = m, Comparison = "US vs CAN_US",
+      Base_Set = "US", Other_Set = "CAN_US", Period = p,
+      t_h1 = t_stats[1], t_h3 = t_stats[2],
+      t_h6 = t_stats[3], t_h12 = t_stats[4]
+    ))
+  }
+}
+
+# ---- 2. Prepare all three predictor-set comparisons ----
+dm_sets_all <- bind_rows(dm_sets_results, dm_us_canus)
+
+model_order <- c("Random Forest Default", "Random Forest Alternate",
+                 "PCA-LASSO", "rLASSO", "Elastic Net (a = 0.5)",
+                 "Ridge", "Simple average (All)",
+                 "Simple average (exclude Ridge)")
+
+period_order <- c("Pre-COVID", "Post-COVID, no dummy",
+                  "Post-COVID, with dummy")
+
+prepare_dm <- function(df, row_type = "Model") {
+  df %>%
+    pivot_longer(cols = matches("^t_h(1|3|6|12)$"),
+                 names_to = "Horizon", names_prefix = "t_h",
+                 values_to = "t") %>%
+    mutate(
+      Horizon = factor(paste0("h=", Horizon),
+                       levels = paste0("h=", c(1, 3, 6, 12))),
+      Panel = factor(recode(Period,
+                            PreCOVID = "Pre-COVID",
+                            PostCOVID = "Post-COVID, no dummy",
+                            PostCOVID_dummy = "Post-COVID, with dummy"),
+                     levels = period_order),
+      Model = factor(Model, levels = model_order),
+      Row = if (row_type == "Model_Set")
+        paste(as.character(Model), Set, sep = " | ")
+      else as.character(Model)
+    ) %>%
+    arrange(Model, if ("Set" %in% names(.)) Set) %>%
+    mutate(Row = fct_rev(fct_inorder(Row)))
+}
+
+# ---- 3. Reusable t-statistic heatmap function ----
+plot_dm_t <- function(dat, title, subtitle, filename, height = 5) {
+  
+  stopifnot(nrow(dat) > 0)
+  stopifnot(!anyDuplicated(dat[c("Row", "Horizon", "Panel")]))
+  
+  t_limit <- max(abs(dat$t), na.rm = TRUE)
+  if (!is.finite(t_limit) || t_limit == 0) t_limit <- 1
+  
+  g <- ggplot(dat, aes(Horizon, Row, fill = t)) +
+    geom_tile(colour = "white", linewidth = 0.8) +
+    geom_text(aes(
+      label = sprintf("%.2f", t),
+      colour = abs(t) > 0.6 * t_limit
+    ), size = 3.2) +
+    scale_colour_manual(
+      values = c(`FALSE` = "#1f1f1d", `TRUE` = "white"),
+      guide = "none"
+    ) +
+    scale_fill_gradient2(
+      low = "#e34948", mid = "#f0efec", high = "#2a78d6",
+      midpoint = 0, limits = c(-t_limit, t_limit),
+      name = "DM t-statistic"
+    ) +
+    facet_wrap(~Panel, nrow = 1) +
+    labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
+    theme_minimal(base_size = 12) +
+    theme(
+      panel.grid = element_blank(),
+      legend.position = "bottom",
+      legend.key.width = unit(2, "cm"),
+      strip.text = element_text(face = "bold"),
+      axis.text.y = element_text(size = 9)
+    )
+  
+  ggsave(file.path(out_dir, filename), g,
+         width = 15, height = height, dpi = 300, bg = "white")
+  return(g)
+}
+
+# ---- 4. Predictor-set comparisons: three heatmaps ----
+for (comp in c("CAN vs CAN_US", "CAN vs US", "US vs CAN_US")) {
+  
+  dat <- dm_sets_all %>%
+    filter(Comparison == comp) %>%
+    prepare_dm()
+  
+  file_tag <- case_when(
+    comp == "CAN vs CAN_US" ~ "CAN_vs_CAN_US",
+    comp == "CAN vs US" ~ "CAN_vs_US",
+    TRUE ~ "US_vs_CAN_US"
+  )
+  
+  plot_dm_t(
+    dat,
+    title = paste("DM test:", comp),
+    subtitle = paste0(
+      "Positive t = ", sub(".* vs ", "", comp),
+      " has lower squared forecast loss; negative t = ",
+      sub(" vs.*", "", comp), " has lower loss"
+    ),
+    filename = paste0("DM_", file_tag, "_t_heatmap.png"),
+    height = 5
+  )
+}
+
+# ---- 5. Models and simple averages vs benchmarks ----
+dm_bench_all <- bind_rows(dm_results, avg_dm_results)
+
+for (bench in unique(dm_bench_all$Benchmark)) {
+  
+  dat <- dm_bench_all %>%
+    filter(Benchmark == bench) %>%
+    prepare_dm(row_type = "Model_Set")
+  
+  bench_tag <- if (bench == "AR(1)") "AR1" else "RW"
+  
+  plot_dm_t(
+    dat,
+    title = paste("DM test: Models vs", bench),
+    subtitle = "Positive t = model outperforms benchmark; negative t = benchmark outperforms model",
+    filename = paste0("DM_vs_", bench_tag, "_t_heatmap.png"),
+    height = 12
+  )
+}
+
 
