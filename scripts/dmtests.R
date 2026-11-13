@@ -4,19 +4,22 @@ library(sandwich) #library to estimate variance for DM test regression using New
 ########################################################
 ###Loading of all the predictions - 
 
+in_dir <- "results"
 
-in_dir <- "results/Predictions"
+files <- c(
+  RF_def_pred = "random_forest_default/level_RF_predictions.csv",
+  RF_alt_pred = "random_forest_alt/level_RF_alt_predictions.csv",
+  PCA_LASSO_pred = "level_PCA_LASSO/level_PCA_LASSO_predictions.csv",
+  rLASSO_pred = "level_rLASSO/level_rLASSO_predictions.csv",
+  Elnet_pred = "ElasticNet_a05/level_ElasticNet_a05_predictions.csv",
+  Ridge_pred = "Ridge/level_Ridge_predictions.csv",
+  RW_pred = "benchmarks/level_random_walk_predictions.csv",
+  AR_pred = "AR/level_AR_fixed_p_predictions.csv"
+)
 
-
-RF_def_pred <- read.csv(file.path(in_dir,"level_RF_default_predictions.csv"), na = "NA")
-RF_alt_pred <- read.csv(file.path(in_dir, "level_RF_alt_predictions.csv"), na = "NA")
-PCA_LASSO_pred <- read.csv(file.path(in_dir,"level_PCA_LASSO_predictions.csv"), na = "NA")
-rLASSO_pred <- read.csv(file.path(in_dir,"level_rLASSO_predictions.csv"), na = "NA")
-Elnet_pred <- read.csv(file.path(in_dir,"level_ElasticNet_a05_predictions.csv"), na = "NA")
-Ridge_pred <- read.csv(file.path(in_dir,"level_Ridge_predictions.csv"), na = "NA")
-
-RW_pred <- read.csv(file.path(in_dir,"level_random_walk_predictions.csv"), na = "NA")
-AR_pred <- read.csv(file.path(in_dir,"level_AR_fixed_p_predictions.csv"), na = "NA")
+predictions <- lapply(file.path(in_dir, files), read.csv)
+names(predictions) <- names(files)
+list2env(predictions, envir = .GlobalEnv)
 
 ## Calc Squared Errors Column
 RF_def_pred["SqErr"] <- RF_def_pred$Forecast_Error^2
@@ -267,7 +270,6 @@ darrf12pre=lar12pre-lrf12pre
 dtarrfpre.ts=ts(cbind(darrf1pre,darrf3pre,darrf6pre,darrf12pre), start=c(2011,9), end=c(2019,12), freq=12)
 colnames(dtarrfpre.ts)=c("1-step dt","3-step dt","6-step dt","12-step dt")
 #Plot them to examine stationarity:
-windows()
 plot.ts(dtarrfpre.ts, main="Loss differential AR-RF",cex.axis=1.8)
 
 #Regress d_t (AR-RF) for 1-step forecasts on a constant - get estimate of mean(d_t)
@@ -321,7 +323,6 @@ drwrf12pre=lrw12pre-lrf12pre
 dtrwrfpre.ts=ts(cbind(drwrf1pre,drwrf3pre,drwrf6pre,drwrf12pre), start=c(2011,9), end=c(2019,12), freq=12)
 colnames(dtrwrfpre.ts)=c("1-step dt","3-step dt","6-step dt","12-step dt")
 #Plot them to examine stationarity:
-windows()
 plot.ts(dtrwrfpre.ts, main="Loss differential RW-RF",cex.axis=1.8)
 
 #Regress d_t (RW-RF) for 1-step forecasts on a constant - get estimate of mean(d_t)
