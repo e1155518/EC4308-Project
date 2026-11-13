@@ -1,22 +1,25 @@
-#install.packages("sandwich")
+install.packages("sandwich")
 library(sandwich) #library to estimate variance for DM test regression using NeweyWest()
 
 ########################################################
 ###Loading of all the predictions - 
 
+in_dir <- "results"
 
-in_dir <- "results/Predictions"
+files <- c(
+  RF_def_pred = "random_forest_default/level_RF_predictions.csv",
+  RF_alt_pred = "random_forest_alt/level_RF_alt_predictions.csv",
+  PCA_LASSO_pred = "level_PCA_LASSO/level_PCA_LASSO_predictions.csv",
+  rLASSO_pred = "level_rLASSO/level_rLASSO_predictions.csv",
+  Elnet_pred = "ElasticNet_a05/level_ElasticNet_a05_predictions.csv",
+  Ridge_pred = "Ridge/level_Ridge_predictions.csv",
+  RW_pred = "benchmarks/level_random_walk_predictions.csv",
+  AR_pred = "AR/level_AR_fixed_p_predictions.csv"
+)
 
-
-RF_def_pred <- read.csv(file.path(in_dir,"level_RF_default_predictions.csv"), na = "NA")
-RF_alt_pred <- read.csv(file.path(in_dir, "level_RF_alt_predictions.csv"), na = "NA")
-PCA_LASSO_pred <- read.csv(file.path(in_dir,"level_PCA_LASSO_predictions.csv"), na = "NA")
-rLASSO_pred <- read.csv(file.path(in_dir,"level_rLASSO_predictions.csv"), na = "NA")
-Elnet_pred <- read.csv(file.path(in_dir,"level_ElasticNet_a05_predictions.csv"), na = "NA")
-Ridge_pred <- read.csv(file.path(in_dir,"level_Ridge_predictions.csv"), na = "NA")
-
-RW_pred <- read.csv(file.path(in_dir,"level_random_walk_predictions.csv"), na = "NA")
-AR_pred <- read.csv(file.path(in_dir,"level_AR_fixed_p_predictions.csv"), na = "NA")
+predictions <- lapply(file.path(in_dir, files), read.csv)
+names(predictions) <- names(files)
+list2env(predictions, envir = .GlobalEnv)
 
 ## Calc Squared Errors Column
 RF_def_pred["SqErr"] <- RF_def_pred$Forecast_Error^2
