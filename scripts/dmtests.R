@@ -1,4 +1,4 @@
-install.packages("sandwich")
+#install.packages("sandwich")
 library(sandwich) #library to estimate variance for DM test regression using NeweyWest()
 
 ########################################################
@@ -270,7 +270,6 @@ darrf12pre=lar12pre-lrf12pre
 dtarrfpre.ts=ts(cbind(darrf1pre,darrf3pre,darrf6pre,darrf12pre), start=c(2011,9), end=c(2019,12), freq=12)
 colnames(dtarrfpre.ts)=c("1-step dt","3-step dt","6-step dt","12-step dt")
 #Plot them to examine stationarity:
-windows()
 plot.ts(dtarrfpre.ts, main="Loss differential AR-RF",cex.axis=1.8)
 
 #Regress d_t (AR-RF) for 1-step forecasts on a constant - get estimate of mean(d_t)
@@ -324,7 +323,6 @@ drwrf12pre=lrw12pre-lrf12pre
 dtrwrfpre.ts=ts(cbind(drwrf1pre,drwrf3pre,drwrf6pre,drwrf12pre), start=c(2011,9), end=c(2019,12), freq=12)
 colnames(dtrwrfpre.ts)=c("1-step dt","3-step dt","6-step dt","12-step dt")
 #Plot them to examine stationarity:
-windows()
 plot.ts(dtrwrfpre.ts, main="Loss differential RW-RF",cex.axis=1.8)
 
 #Regress d_t (RW-RF) for 1-step forecasts on a constant - get estimate of mean(d_t)
