@@ -14,10 +14,6 @@ for (c in c("Outcome_Date", "Forecast_Origin")) p[[c]] <- as.Date(p[[c]])
 can <- read_excel("data/CAN_data_cleaned.xlsx"); can$Date <- as.Date(can$Date)
 p$RW <- can$Employ_Rate[match(p$Forecast_Origin, can$Date)]
 
-# Rolling historical average of the level
-ha <- read.csv("results/benchmarks/level_Historical_Average_Rolling_predictions.csv")
-p$HA <- ha$Predicted[match(paste(p$Horizon, p$Outcome_Date), paste(ha$Horizon, ha$Outcome_Date))]
-
 # Draw a text table (first row = header, first column = row labels) in the bottom-left corner (empty before the COVID dip)
 rmse_table <- function(tab, best) {
   nr <- nrow(tab); nc <- ncol(tab)
@@ -35,7 +31,7 @@ for (s in unique(p$Predictor_Set)) for (h in sort(unique(p$Horizon))) {
   # One row per outcome date, with both specifications side by side
   nd <- subset(p, Predictor_Set == s & Horizon == h & Specification == "No_Dummy")
   wd <- subset(p, Predictor_Set == s & Horizon == h & Specification == "With_Dummy")
-  w  <- data.frame(nd[c("Outcome_Date", "Period", "Actual", "RW", "HA")], No_Dummy = nd$Predicted,
+  w  <- data.frame(nd[c("Outcome_Date", "Period", "Actual", "RW")], No_Dummy = nd$Predicted,
                    With_Dummy = wd$Predicted[match(nd$Outcome_Date, wd$Outcome_Date)])
   pre <- w$Period == "Pre_COVID"; post <- !pre
   
@@ -59,14 +55,13 @@ for (s in unique(p$Predictor_Set)) for (h in sort(unique(p$Horizon))) {
   g <- ggplot(w, aes(x = Outcome_Date)) +
     geom_vline(xintercept = as.Date("2020-01-01"), linetype = "dotted", colour = "grey50") +  # post-COVID test starts
     geom_line(aes(y = RW,         colour = "Random walk"), linewidth = 0.6, linetype = "dashed") +
-    geom_line(aes(y = HA,         colour = "Rolling average"), linewidth = 0.6, linetype = "dotted") +
     geom_line(aes(y = With_Dummy, colour = "With Dummy"), linewidth = 0.8) +
     geom_line(aes(y = No_Dummy,   colour = "Without Dummy"), linewidth = 0.8) +
     geom_line(aes(y = Actual,     colour = "Actual"), linewidth = 0.8) +
     annotation_custom(rmse_table(tab, best), -Inf, Inf, -Inf, Inf) +
     scale_colour_manual(values = c("Actual" = "black", "Without Dummy" = "#2563EB", "With Dummy" = "#E69F00",
                                    "Rolling average" = "#7B3FA0", "Random walk" = "grey55"),
-                        breaks = c("Actual", "Without Dummy", "With Dummy", "Rolling average", "Random walk")) +
+                        breaks = c("Actual", "Without Dummy", "With Dummy", "Random walk")) +
     labs(title = sprintf("Level Elastic Net %s | h=%d", s, h),
          x = "Outcome Date", y = "Canadian employment rate (%)", colour = NULL) +
     theme_minimal()
