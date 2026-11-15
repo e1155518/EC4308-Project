@@ -282,3 +282,44 @@ print(pair_tbl %>% arrange(desc(abs(r))) %>% slice_head(n = 10), width = Inf)
 dir.create("results/EDA", recursive = TRUE, showWarnings = FALSE)
 ggsave("results/EDA/Correlation_Predictors.png", p_corr,     width = 14, height = 13, dpi = 300, bg = "white")
 ggsave("results/EDA/Correlation_By_Group.png",   p_corr_grp, width = 14, height = 13, dpi = 300, bg = "white")
+
+
+
+# ============================================================
+# Employment rate summary statistics by evaluation period
+# ============================================================
+
+employment_eval_summary <- can %>%
+  mutate(
+    Period = case_when(
+      Date >= as.Date("2011-09-01") &
+        Date <= as.Date("2019-12-01") ~ "Pre_COVID",
+      
+      Date >= as.Date("2020-01-01") &
+        Date <= as.Date("2025-09-01") ~ "Post_COVID",
+      
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(Period)) %>%
+  group_by(Period) %>%
+  summarise(
+    N = n(),
+    Mean = mean(Employ_Rate),
+    SD = sd(Employ_Rate),
+    Min = min(Employ_Rate),
+    Max = max(Employ_Rate),
+    Range = Max - Min,
+    .groups = "drop"
+  )
+
+print(employment_eval_summary, width = Inf)
+
+dir.create("results/EDA", recursive = TRUE, showWarnings = FALSE)
+
+write.csv(
+  employment_eval_summary,
+  "results/EDA/employment_evaluation_summary.csv",
+  row.names = FALSE
+)
+
