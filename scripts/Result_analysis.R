@@ -95,7 +95,7 @@ g3 <- ggplot(us_gain, aes(Horizon, Model, fill = Ratio)) +
   scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948", midpoint = 1,
                        limits = c(0.85, 1.15), oob = scales::squish, name = "RMSE (CAN_US) / RMSE (CAN)") +
   facet_wrap(~Panel) +
-  labs(title = "Does adding US indicators improve forecasts of Canadian employment?",
+  labs(title = "Does adding US indicators improve forecasts of Canadian employment rate?",
        subtitle = "Below 1 = the CAN_US predictor set forecasts better than the Canadian-only set; above 1 = worse",
        x = NULL, y = NULL) +
   theme_minimal(base_size = 12) +
@@ -193,3 +193,118 @@ group_plot <- function(method, label) {
             file.path(out_dir, sprintf("%s_group_selection.csv", method)))
 }
 group_plot("rLASSO", "rLASSO")
+
+
+
+# ============================================================
+# 5. Post-COVID: Does adding COVID dummies improve RMSE?
+# ============================================================
+
+dummy_comparison <- rmse %>%
+  filter(
+    Period == "Post_COVID",
+    Specification %in% c("No_Dummy", "With_Dummy")
+  ) %>%
+  select(Model, Predictor_Set, Horizon, Specification, RMSE) %>%
+  pivot_wider(
+    names_from = Specification,
+    values_from = RMSE
+  ) %>%
+  filter(
+    !is.na(No_Dummy),
+    !is.na(With_Dummy),
+    No_Dummy > 0
+  ) %>%
+  mutate(
+    Ratio = With_Dummy / No_Dummy,
+    Difference = With_Dummy - No_Dummy,
+    Horizon_Label = hlab(Horizon),
+    Row_Label = if_else(
+      Predictor_Set == "Own lags",
+      as.character(Model),
+      paste(Model, Predictor_Set, sep = " | ")
+    )
+  )
+
+# Check that each model/predictor-set/horizon appears once
+stopifnot(
+  !anyDuplicated(
+    dummy_comparison[c("Model", "Predictor_Set", "Horizon")]
+  )
+)
+
+# Preserve the model order from the earlier heatmaps
+dummy_comparison <- dummy_comparison %>%
+  arrange(
+    factor(Model, levels = model_order),
+    factor(Predictor_Set, levels = c("Own lags", "CAN", "US", "CAN_US"))
+  ) %>%
+  mutate(
+    Row_Label = forcats::fct_rev(
+      forcats::fct_inorder(Row_Label)
+    )
+  )
+
+# Export comparison table
+write_csv(
+  dummy_comparison %>%
+    select(Model, Predictor_Set, Horizon,
+           No_Dummy, With_Dummy, Ratio, Difference),
+  file.path(out_dir, "Post_COVID_dummy_comparison.csv")
+)
+
+# Heatmap
+g_dummy <- ggplot(
+  dummy_comparison,
+  aes(x = Horizon_Label, y = Row_Label, fill = Ratio)
+) +
+  geom_tile(colour = "white", linewidth = 0.8) +
+  geom_text(
+    aes(
+      label = sprintf("%.2f", Ratio),
+      colour = abs(Ratio - 1) > 0.1
+    ),
+    size = 3.5
+  ) +
+  scale_colour_manual(
+    values = c("FALSE" = "#1f1f1d", "TRUE" = "white"),
+    guide = "none"
+  ) +
+  scale_fill_gradient2(
+    low = "#2a78d6",
+    mid = "#f0efec",
+    high = "#e34948",
+    midpoint = 1,
+    limits = c(0.85, 1.15),
+    oob = scales::squish,
+    name = "RMSE ratio"
+  ) +
+  labs(
+    title = "Does adding COVID dummies improve Post-COVID forecasts?",
+    subtitle = paste(
+      "RMSE with dummy / RMSE without dummy",
+      "| Below 1 = improvement; above 1 = deterioration"
+    ),
+    x = "Forecast horizon",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    legend.key.width = grid::unit(2, "cm"),
+    plot.title = element_text(face = "bold"),
+    axis.text.y = element_text(size = 10)
+  )
+
+print(g_dummy)
+
+ggsave(
+  file.path(out_dir, "Post_COVID_dummy_comparison_heatmap.png"),
+  g_dummy,
+  width = 12,
+  height = 8,
+  dpi = 300,
+  bg = "white"
+)
+
