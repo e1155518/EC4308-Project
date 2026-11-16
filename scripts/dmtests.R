@@ -721,7 +721,6 @@ write.csv(avg_dm_results,   file.path(out_dir, "DM_simple_average_vs_benchmarks.
 write.csv(avg_rmse_results, file.path(out_dir, "RMSE_ensemble_ratios.csv"), row.names = FALSE)
 
 
-
 ############### yihong plots dont delete me please ###################
 
 library(tidyverse)
